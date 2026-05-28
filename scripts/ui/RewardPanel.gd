@@ -1,4 +1,4 @@
-extends Control
+extends CanvasLayer
 
 signal reward_selected(reward_id: String)
 
@@ -19,6 +19,7 @@ var rewards: Array = []
 
 func _ready():
 	visible = false
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	EventBus.show_reward_panel.connect(_on_show_reward)
 	card1.pressed.connect(func(): _select_reward(0))
 	card2.pressed.connect(func(): _select_reward(1))
@@ -69,8 +70,8 @@ func _update_cards():
 	var cards = [card1, card2, card3]
 	for i in range(min(rewards.size(), cards.size())):
 		var reward = rewards[i]
-		var label = cards[i].get_node("Label")
-		var desc = cards[i].get_node("Description")
+		var label = cards[i].get_node_or_null("Label")
+		var desc = cards[i].get_node_or_null("Description")
 		if label:
 			label.text = reward.get("name", "Unknown")
 			label.add_theme_color_override("font_color", COLOR_GOLD)

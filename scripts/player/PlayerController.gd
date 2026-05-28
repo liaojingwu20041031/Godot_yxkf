@@ -372,7 +372,10 @@ func _do_attack_combo():
 		combo_count = 0
 
 func _enable_attack_hitbox(damage: int):
-	attack_hitbox.set_meta("damage", damage)
+	var kb_dir = Vector2.RIGHT if facing_right else Vector2.LEFT
+	attack_hitbox.set_damage(damage)
+	attack_hitbox.set_knockback(kb_dir, 150.0)
+	attack_hitbox.owner_node = self
 	attack_hitbox.get_node("CollisionShape2D").disabled = false
 
 func _disable_attack_hitbox():
@@ -381,7 +384,7 @@ func _disable_attack_hitbox():
 func _flip():
 	facing_right = not facing_right
 	sprite.flip_h = not facing_right
-	attack_pivot.scale.x = -1 if facing_right else 1
+	attack_pivot.scale.x = 1 if facing_right else -1
 
 func _update_state():
 	if current_state == State.DEAD:

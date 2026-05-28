@@ -17,9 +17,6 @@ size = Vector2(16, 48)
 script = ExtResource("1")
 room_type = 7
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(320, 180)
-
 [node name="Background" type="ColorRect" parent="."]
 position = Vector2(-320, -180)
 size = Vector2(640, 360)
@@ -91,33 +88,3 @@ position = Vector2(100, 326)
 
 [node name="Boss" parent="EnemyContainer" instance=ExtResource("3")]
 position = Vector2(450, 280)
-
-[node name="HUD" type="CanvasLayer" parent="."]
-layer = 10
-
-[node name="BossBar" type="ProgressBar" parent="HUD"]
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -150.0
-offset_top = -30.0
-offset_right = 150.0
-offset_bottom = -15.0
-max_value = 450.0
-value = 450.0
-show_percentage = false
-
-[node name="BossName" type="Label" parent="HUD/BossBar"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -60.0
-offset_top = -15.0
-offset_right = 60.0
-theme_override_colors/font_color = Color(0.9, 0.3, 0.3, 1)
-theme_override_font_sizes/font_size = 10
-text = "腐败地牢骑士"
-horizontal_alignment = 1

@@ -1,3 +1,4 @@
+class_name EnemyBase
 extends CharacterBody2D
 
 @export var max_health: int = 35
@@ -39,7 +40,6 @@ func _setup_enemy_sprite():
 		tex_sprite.centered = true
 		tex_sprite.offset = Vector2(0, -12)
 		add_child(tex_sprite)
-		# Setup hit flash
 		hit_flash_node = preload("res://scripts/combat/HitFlash.gd").new()
 		hit_flash_node.name = "HitFlash"
 		add_child(hit_flash_node)
@@ -57,19 +57,15 @@ func _setup_connections():
 	if detection_area:
 		detection_area.body_entered.connect(_on_detection_entered)
 		detection_area.body_exited.connect(_on_detection_exited)
-	if attack_area:
-		attack_area.body_entered.connect(_on_attack_entered)
 	if hurtbox and hurtbox.has_signal("hurt"):
 		hurtbox.hurt.connect(_on_hurt)
 
 func _physics_process(delta):
 	if is_dead:
 		return
-
 	if not is_on_floor():
 		velocity.y += 900 * delta
 		velocity.y = min(velocity.y, 520)
-
 	match current_state:
 		EnemyState.IDLE:
 			_idle_state(delta)
@@ -81,35 +77,32 @@ func _physics_process(delta):
 			_attack_state(delta)
 		EnemyState.HIT:
 			_hit_state(delta)
-
 	move_and_slide()
 
-func _idle_state(delta):
-	velocity.x = move_toward(velocity.x, 0, 500 * delta)
+func _idle_state(_delta):
+	velocity.x = move_toward(velocity.x, 0, 500 * _delta)
 	if player:
 		current_state = EnemyState.CHASE
 
-func _patrol_state(delta):
+func _patrol_state(_delta):
 	pass
 
-func _chase_state(delta):
+func _chase_state(_delta):
 	if not player:
 		current_state = EnemyState.IDLE
 		return
-
 	var dir = (player.global_position - global_position).normalized()
 	velocity.x = dir.x * move_speed
 	_face_player()
-
 	if global_position.distance_to(player.global_position) <= attack_range:
 		current_state = EnemyState.ATTACK
 
-func _attack_state(delta):
-	velocity.x = move_toward(velocity.x, 0, 500 * delta)
+func _attack_state(_delta):
+	velocity.x = move_toward(velocity.x, 0, 500 * _delta)
 	if can_attack:
 		_perform_attack()
 
-func _hit_state(delta):
+func _hit_state(_delta):
 	pass
 
 func _perform_attack():
@@ -134,7 +127,6 @@ func _face_player():
 func _flip():
 	facing_right = not facing_right
 	sprite.flip_h = not facing_right
-	# Also flip the monster texture sprite if present
 	var tex_sprite = get_node_or_null("MonsterSprite")
 	if tex_sprite:
 		tex_sprite.flip_h = not facing_right
@@ -149,14 +141,9 @@ func _on_detection_exited(body: Node2D):
 		player = null
 		current_state = EnemyState.IDLE
 
-func _on_attack_entered(body: Node2D):
-	if body.is_in_group("player") and body.has_method("take_damage"):
-		body.take_damage(attack_power, self)
-
 func _on_hurt(damage: int, knockback: Vector2, source: Node):
 	current_health -= damage
 	EventBus.enemy_hit.emit(self, damage)
-	# Trigger hit flash
 	if hit_flash_node and hit_flash_node.has_method("flash"):
 		hit_flash_node.flash()
 	if current_health <= 0:
@@ -173,9 +160,7 @@ func die():
 	current_state = EnemyState.DEAD
 	velocity = Vector2.ZERO
 	EventBus.enemy_died.emit(self)
-	# Spawn loot
 	_spawn_death_loot()
-	# Fade out
 	var tween = create_tween()
 	tween.tween_property(self, "modulate:a", 0.0, 0.3)
 	await tween.finished

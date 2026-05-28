@@ -20,9 +20,6 @@ size = Vector2(16, 48)
 script = ExtResource("1")
 room_type = 1
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(320, 180)
-
 [node name="Background" type="ColorRect" parent="."]
 position = Vector2(-320, -180)
 size = Vector2(640, 360)
@@ -126,6 +123,13 @@ offset_top = -24.0
 offset_right = 8.0
 offset_bottom = 24.0
 color = Color(0.4, 0.6, 0.3, 1)
+
+[node name="ExitDetection" type="Area2D" parent="ExitDoor"]
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDoor/ExitDetection"]
+shape = SubResource("door_shape")
 
 [node name="EnemyContainer" type="Node2D" parent="."]
 

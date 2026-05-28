@@ -37,6 +37,11 @@ func _ready():
 	elif entrance_door and entrance_door.has_node("CollisionShape2D"):
 		entrance_door.get_node("CollisionShape2D").disabled = true
 
+	# Connect exit detection area
+	if exit_door and exit_door.has_node("ExitDetection"):
+		var exit_detection = exit_door.get_node("ExitDetection")
+		exit_detection.body_entered.connect(_on_exit_body_entered)
+
 	EventBus.enemy_died.connect(_on_enemy_died)
 
 	if room_type == RoomType.COMBAT or room_type == RoomType.ELITE or room_type == RoomType.BOSS:
@@ -140,9 +145,14 @@ func _on_enemy_died(enemy: Node):
 		enemies_alive -= 1
 		if enemies_alive <= 0:
 			all_enemies_dead.emit()
-			_open_exit()
-			if room_type == RoomType.COMBAT or room_type == RoomType.ELITE:
-				_show_reward()
+			if room_type == RoomType.BOSS:
+				# Boss defeated - victory!
+				await get_tree().create_timer(2.0).timeout
+				EventBus.game_over.emit(true)
+			else:
+				_open_exit()
+				if room_type == RoomType.COMBAT or room_type == RoomType.ELITE:
+					_show_reward()
 
 func _show_reward():
 	var rewards = _generate_rewards()

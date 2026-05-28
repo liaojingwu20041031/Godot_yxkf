@@ -57,7 +57,7 @@ func _ready():
 	vbox.add_child(sp)
 
 	var btn1 = _mkbtn("开始游戏")
-	btn1.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/rooms/TestRoom.tscn"))
+	btn1.pressed.connect(func(): GameManager.start_game())
 	vbox.add_child(btn1)
 
 	var btn2 = _mkbtn("设置")

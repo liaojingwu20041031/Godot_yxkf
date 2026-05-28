@@ -10,7 +10,7 @@ size = Vector2(14, 24)
 radius = 150.0
 
 [sub_resource type="RectangleShape2D" id="attack_shape"]
-size = Vector2(30, 20)
+size = Vector2(50, 30)
 
 [sub_resource type="RectangleShape2D" id="hurtbox_shape"]
 size = Vector2(18, 28)
