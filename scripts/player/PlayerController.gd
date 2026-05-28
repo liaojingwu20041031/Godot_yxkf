@@ -8,7 +8,7 @@ const AIR_ACCEL: float = 1000.0
 const GRAVITY: float = 900.0
 const FALL_GRAVITY_MULT: float = 1.5
 const MAX_FALL_SPEED: float = 520.0
-const JUMP_VELOCITY: float = -330.0
+const JUMP_VELOCITY: float = -380.0
 const SHORT_JUMP_MULT: float = 0.5
 
 # Dash constants

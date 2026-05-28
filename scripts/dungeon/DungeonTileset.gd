@@ -119,12 +119,16 @@ static func build_pit_room(tilemap: TileMapLayer, gap_start: int = 8, gap_end: i
 # Build room with elevated platforms
 static func build_platform_room(tilemap: TileMapLayer, platform_y: int = 4, platform_source: int = 4, floor_source: int = 0, wall_source: int = 2):
 	build_standard_room(tilemap, floor_source, wall_source)
-	# Left platform (columns 3-7)
+	# Low stepping stones (one jump from floor)
+	for x in range(3, 6):
+		tilemap.set_cell(Vector2i(x, 8), platform_source, Vector2i(0, 0))
+	for x in range(14, 17):
+		tilemap.set_cell(Vector2i(x, 8), platform_source, Vector2i(0, 0))
+	# High platforms (one jump from stepping stones)
 	for x in range(3, 8):
-		tilemap.set_cell(Vector2i(x, platform_y), platform_source, Vector2i(0, 0))
-	# Right platform (columns 12-16)
+		tilemap.set_cell(Vector2i(x, 5), platform_source, Vector2i(0, 0))
 	for x in range(12, 17):
-		tilemap.set_cell(Vector2i(x, platform_y), platform_source, Vector2i(0, 0))
+		tilemap.set_cell(Vector2i(x, 5), platform_source, Vector2i(0, 0))
 
 # Build room with wall pillars
 static func build_pillar_room(tilemap: TileMapLayer, floor_source: int = 1, wall_source: int = 3):
@@ -137,26 +141,36 @@ static func build_pillar_room(tilemap: TileMapLayer, floor_source: int = 1, wall
 # Build a rich combat arena with platforms and obstacles
 static func build_arena_room(tilemap: TileMapLayer, floor_source: int = 0, wall_source: int = 2, platform_source: int = 4):
 	build_standard_room(tilemap, floor_source, wall_source)
-	# Central low platform
+	# Low stepping stones (64px up from floor, easily reachable)
+	for x in range(5, 8):
+		tilemap.set_cell(Vector2i(x, 8), platform_source, Vector2i(0, 0))
+	for x in range(12, 15):
+		tilemap.set_cell(Vector2i(x, 8), platform_source, Vector2i(0, 0))
+	# Central platform (64px up from stepping stones)
 	for x in range(8, 12):
-		tilemap.set_cell(Vector2i(x, 7), platform_source, Vector2i(0, 0))
-	# Side ledges
+		tilemap.set_cell(Vector2i(x, 6), platform_source, Vector2i(0, 0))
+	# High side ledges (64px up from central)
 	for x in range(2, 5):
-		tilemap.set_cell(Vector2i(x, 5), platform_source, Vector2i(0, 0))
+		tilemap.set_cell(Vector2i(x, 4), platform_source, Vector2i(0, 0))
 	for x in range(15, 18):
-		tilemap.set_cell(Vector2i(x, 5), platform_source, Vector2i(0, 0))
+		tilemap.set_cell(Vector2i(x, 4), platform_source, Vector2i(0, 0))
 
 # Build boss arena - wide open with high platforms
 static func build_boss_arena(tilemap: TileMapLayer, floor_source: int = 1, wall_source: int = 3, platform_source: int = 4):
 	build_standard_room(tilemap, floor_source, wall_source)
-	# High platforms on both sides
+	# Low platforms on both sides (64px up, one jump from floor)
 	for x in range(2, 6):
-		tilemap.set_cell(Vector2i(x, 4), platform_source, Vector2i(0, 0))
+		tilemap.set_cell(Vector2i(x, 8), platform_source, Vector2i(0, 0))
 	for x in range(14, 18):
-		tilemap.set_cell(Vector2i(x, 4), platform_source, Vector2i(0, 0))
-	# Mid platforms
+		tilemap.set_cell(Vector2i(x, 8), platform_source, Vector2i(0, 0))
+	# High platforms (64px up from low platforms)
+	for x in range(2, 6):
+		tilemap.set_cell(Vector2i(x, 5), platform_source, Vector2i(0, 0))
+	for x in range(14, 18):
+		tilemap.set_cell(Vector2i(x, 5), platform_source, Vector2i(0, 0))
+	# Central platform
 	for x in range(8, 12):
-		tilemap.set_cell(Vector2i(x, 6), platform_source, Vector2i(0, 0))
+		tilemap.set_cell(Vector2i(x, 7), platform_source, Vector2i(0, 0))
 
 # Build treasure room with alcoves
 static func build_treasure_room(tilemap: TileMapLayer, floor_source: int = 1, wall_source: int = 3):
@@ -200,12 +214,12 @@ static func build_vertical_room(tilemap: TileMapLayer, floor_source: int = 0, wa
 # Build wide room - flanking platforms
 static func build_wide_room(tilemap: TileMapLayer, floor_source: int = 0, wall_source: int = 2, platform_source: int = 4):
 	build_standard_room(tilemap, floor_source, wall_source)
-	# Left flank platform
+	# Left flank platform (one jump from floor)
 	for x in range(1, 5):
-		tilemap.set_cell(Vector2i(x, 5), platform_source, Vector2i(0, 0))
-	# Right flank platform
+		tilemap.set_cell(Vector2i(x, 8), platform_source, Vector2i(0, 0))
+	# Right flank platform (one jump from floor)
 	for x in range(15, 19):
-		tilemap.set_cell(Vector2i(x, 5), platform_source, Vector2i(0, 0))
+		tilemap.set_cell(Vector2i(x, 8), platform_source, Vector2i(0, 0))
 	# Center obstacle
 	for x in range(9, 11):
 		tilemap.set_cell(Vector2i(x, 8), wall_source, Vector2i(0, 0))
