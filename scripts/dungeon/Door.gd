@@ -13,6 +13,9 @@ func _ready():
 	sprite_node = get_node_or_null("Sprite2D")
 	closed_texture = load("res://assets/dungeon_crawl/doors/dngn_closed_door.png")
 	open_texture = load("res://assets/dungeon_crawl/doors/dngn_open_door.png")
+	# Position sprite so bottom aligns with floor (y=320 in room coords)
+	if sprite_node and sprite_node is Sprite2D:
+		sprite_node.position.y = 8
 	_update_visual()
 
 func open():

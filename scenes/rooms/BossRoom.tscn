@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://boss_room"]
+[gd_scene load_steps=6 format=3 uid="uid://boss_room"]
 
 [ext_resource type="Script" path="res://scripts/dungeon/RoomManager.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/dungeon/Door.gd" id="2"]
@@ -12,15 +12,8 @@ size = Vector2(16, 48)
 [node name="BossRoom" type="Node2D"]
 script = ExtResource("1")
 room_type = 7
-room_layout = "pillar"
+room_layout = "boss_arena"
 floor_variant = 1
-
-[node name="Background" type="ColorRect" parent="."]
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 640.0
-offset_bottom = 360.0
-color = Color(0.1, 0.04, 0.04, 1)
 
 [node name="EntranceDoor" type="StaticBody2D" parent="."]
 position = Vector2(40, 296)
@@ -43,10 +36,13 @@ position = Vector2(320, 180)
 position = Vector2(150, 290)
 
 [node name="Torch1" parent="PropContainer" instance=ExtResource("5")]
-position = Vector2(100, 240)
+position = Vector2(48, 288)
 
 [node name="Torch2" parent="PropContainer" instance=ExtResource("5")]
-position = Vector2(540, 240)
+position = Vector2(320, 288)
+
+[node name="Torch3" parent="PropContainer" instance=ExtResource("5")]
+position = Vector2(592, 288)
 
 [node name="Boss" parent="EnemyContainer" instance=ExtResource("4")]
 position = Vector2(450, 280)

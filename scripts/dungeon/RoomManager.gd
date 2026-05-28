@@ -25,17 +25,19 @@ func _ready():
 	# Generate tilemap using DungeonTileset
 	_setup_tilemap()
 
-	# Exit door starts closed
-	if exit_door and exit_door.has_method("close"):
-		exit_door.close()
-	elif exit_door and exit_door.has_node("CollisionShape2D"):
-		exit_door.get_node("CollisionShape2D").disabled = false
+	# Exit door starts closed (except for safe rooms)
+	if room_type == RoomType.START:
+		# Start room: both doors open
+		if exit_door and exit_door.has_method("open"):
+			exit_door.open()
+	else:
+		# Combat/treasure/etc: exit closed until cleared
+		if exit_door and exit_door.has_method("close"):
+			exit_door.close()
 
 	# Entrance door starts open
 	if entrance_door and entrance_door.has_method("open"):
 		entrance_door.open()
-	elif entrance_door and entrance_door.has_node("CollisionShape2D"):
-		entrance_door.get_node("CollisionShape2D").disabled = true
 
 	# Connect exit detection area
 	if exit_door and exit_door.has_node("ExitDetection"):
@@ -54,13 +56,20 @@ func _ready():
 		call_deferred("activate")
 
 func _setup_tilemap():
+	# Add main collision tilemap
 	if has_node("DungeonTileMap"):
 		return
+
+	# Add background tilemap first (behind everything)
+	if not has_node("BackgroundTileMap"):
+		var bg_tilemap = DungeonTileset.create_background_tilemap()
+		add_child(bg_tilemap)
+		move_child(bg_tilemap, 0)
 	var floor_source = floor_variant if floor_variant >= 0 else 0
 	var wall_source = 2 if floor_variant == 0 else 3
 	var tilemap = DungeonTileset.create_room_tilemap(room_layout, floor_source, wall_source)
 	add_child(tilemap)
-	move_child(tilemap, 0)
+	move_child(tilemap, 1)
 
 func activate():
 	is_active = true
@@ -80,15 +89,11 @@ func _close_entrance():
 	if entrance_door:
 		if entrance_door.has_method("close"):
 			entrance_door.close()
-		elif entrance_door.has_node("CollisionShape2D"):
-			entrance_door.get_node("CollisionShape2D").disabled = false
 
 func _open_exit():
 	if exit_door:
 		if exit_door.has_method("open"):
 			exit_door.open()
-		elif exit_door.has_node("CollisionShape2D"):
-			exit_door.get_node("CollisionShape2D").disabled = true
 	is_cleared = true
 	room_cleared.emit()
 
@@ -96,8 +101,6 @@ func _open_entrance():
 	if entrance_door:
 		if entrance_door.has_method("open"):
 			entrance_door.open()
-		elif entrance_door.has_node("CollisionShape2D"):
-			entrance_door.get_node("CollisionShape2D").disabled = true
 
 func _spawn_enemies():
 	# Count pre-placed enemies in EnemyContainer
@@ -123,12 +126,11 @@ func _spawn_treasure():
 		for prop in prop_container.get_children():
 			if prop.has_signal("opened"):
 				prop.opened.connect(_on_treasure_opened)
-	# Treasure room is safe - mark as cleared immediately
-	is_cleared = true
 
 func _spawn_shop():
-	# Shop room - no enemies, mark as cleared
+	# Shop room - no enemies, mark as cleared immediately so exit opens
 	is_cleared = true
+	_open_exit()
 
 func _spawn_rest():
 	# Rest room - heal player
@@ -138,11 +140,13 @@ func _spawn_rest():
 			player.heal(50)
 		elif player.get("current_health") != null:
 			player.current_health = min(player.current_health + 50, player.max_health)
+	# Rest room is safe - mark as cleared so exit opens
 	is_cleared = true
+	_open_exit()
 
 func _on_treasure_opened():
-	# Treasure collected - room is done
-	pass
+	# Treasure collected - open exit
+	_open_exit()
 
 func _on_enemy_died(enemy: Node):
 	if enemy in tracked_enemies:

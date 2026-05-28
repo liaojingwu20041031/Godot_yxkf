@@ -13,6 +13,10 @@ var room_pools: Dictionary = {
 		"res://scenes/rooms/CombatRoom_Platform.tscn",
 		"res://scenes/rooms/CombatRoom_Pit.tscn",
 	],
+	"ELITE": [
+		"res://scenes/rooms/CombatRoom_Platform.tscn",
+		"res://scenes/rooms/CombatRoom_Pit.tscn",
+	],
 	"TREASURE": ["res://scenes/rooms/TreasureRoom.tscn"],
 	"SHOP": ["res://scenes/rooms/ShopRoom.tscn"],
 	"REST": ["res://scenes/rooms/RestRoom.tscn"],
@@ -22,7 +26,7 @@ var room_pools: Dictionary = {
 # Sequence of room types for a run
 var run_sequence: Array[String] = [
 	"START", "COMBAT", "COMBAT", "TREASURE",
-	"COMBAT", "SHOP", "REST", "BOSS"
+	"ELITE", "COMBAT", "REST", "BOSS"
 ]
 
 var _last_picked: Dictionary = {}

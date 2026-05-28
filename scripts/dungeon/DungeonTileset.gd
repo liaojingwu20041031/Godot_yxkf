@@ -55,7 +55,6 @@ static func _add_atlas_source(tileset: TileSet, source_id: int, texture_path: St
 	src.texture = tex
 	src.texture_region_size = Vector2i(TILE_SIZE, TILE_SIZE)
 	src.create_tile(Vector2i(0, 0))
-	# Add source to tileset FIRST so physics layers are available
 	tileset.add_source(src, source_id)
 	if has_collision:
 		var added_src: TileSetAtlasSource = tileset.get_source(source_id)
@@ -75,17 +74,21 @@ static func _add_platform_source(tileset: TileSet, source_id: int, texture_path:
 	src.texture = tex
 	src.texture_region_size = Vector2i(TILE_SIZE, TILE_SIZE)
 	src.create_tile(Vector2i(0, 0))
-	# Add source to tileset FIRST so physics layers are available
 	tileset.add_source(src, source_id)
 	var added_src: TileSetAtlasSource = tileset.get_source(source_id)
 	var td = added_src.get_tile_data(Vector2i(0, 0), 0)
-	# Half-height top collision for one-way platform
 	td.set_collision_polygons_count(0, 1)
 	td.set_collision_polygon_points(0, 0, PackedVector2Array([
 		Vector2(0, 0), Vector2(TILE_SIZE, 0),
 		Vector2(TILE_SIZE, 10), Vector2(0, 10)
 	]))
 	td.set_collision_polygon_one_way(0, 0, true)
+
+# Fill the entire room with dark wall tiles as background
+static func fill_room_background(tilemap: TileMapLayer, wall_source: int = 3):
+	for x in range(ROOM_WIDTH):
+		for y in range(ROOM_HEIGHT):
+			tilemap.set_cell(Vector2i(x, y), wall_source, Vector2i(0, 0))
 
 # Build standard rectangular room: floor, walls, ceiling
 static func build_standard_room(tilemap: TileMapLayer, floor_source: int = 0, wall_source: int = 2):
@@ -115,7 +118,6 @@ static func build_pit_room(tilemap: TileMapLayer, gap_start: int = 8, gap_end: i
 
 # Build room with elevated platforms
 static func build_platform_room(tilemap: TileMapLayer, platform_y: int = 4, platform_source: int = 4, floor_source: int = 0, wall_source: int = 2):
-	# Standard floor + walls + ceiling
 	build_standard_room(tilemap, floor_source, wall_source)
 	# Left platform (columns 3-7)
 	for x in range(3, 8):
@@ -132,6 +134,55 @@ static func build_pillar_room(tilemap: TileMapLayer, floor_source: int = 1, wall
 		tilemap.set_cell(Vector2i(2, row), wall_source, Vector2i(0, 0))
 		tilemap.set_cell(Vector2i(17, row), wall_source, Vector2i(0, 0))
 
+# Build a rich combat arena with platforms and obstacles
+static func build_arena_room(tilemap: TileMapLayer, floor_source: int = 0, wall_source: int = 2, platform_source: int = 4):
+	build_standard_room(tilemap, floor_source, wall_source)
+	# Central low platform
+	for x in range(8, 12):
+		tilemap.set_cell(Vector2i(x, 7), platform_source, Vector2i(0, 0))
+	# Side ledges
+	for x in range(2, 5):
+		tilemap.set_cell(Vector2i(x, 5), platform_source, Vector2i(0, 0))
+	for x in range(15, 18):
+		tilemap.set_cell(Vector2i(x, 5), platform_source, Vector2i(0, 0))
+
+# Build boss arena - wide open with high platforms
+static func build_boss_arena(tilemap: TileMapLayer, floor_source: int = 1, wall_source: int = 3, platform_source: int = 4):
+	build_standard_room(tilemap, floor_source, wall_source)
+	# High platforms on both sides
+	for x in range(2, 6):
+		tilemap.set_cell(Vector2i(x, 4), platform_source, Vector2i(0, 0))
+	for x in range(14, 18):
+		tilemap.set_cell(Vector2i(x, 4), platform_source, Vector2i(0, 0))
+	# Mid platforms
+	for x in range(8, 12):
+		tilemap.set_cell(Vector2i(x, 6), platform_source, Vector2i(0, 0))
+
+# Build treasure room with alcoves
+static func build_treasure_room(tilemap: TileMapLayer, floor_source: int = 1, wall_source: int = 3):
+	build_standard_room(tilemap, floor_source, wall_source)
+	# Decorative side alcoves (wall insets)
+	tilemap.set_cell(Vector2i(2, 6), wall_source, Vector2i(0, 0))
+	tilemap.set_cell(Vector2i(17, 6), wall_source, Vector2i(0, 0))
+
+# Build rest room with campfire area
+static func build_rest_room(tilemap: TileMapLayer, floor_source: int = 0, wall_source: int = 2):
+	build_standard_room(tilemap, floor_source, wall_source)
+	# Small side shelves
+	for x in range(2, 4):
+		tilemap.set_cell(Vector2i(x, 7), TileSource.PLATFORM, Vector2i(0, 0))
+	for x in range(16, 18):
+		tilemap.set_cell(Vector2i(x, 7), TileSource.PLATFORM, Vector2i(0, 0))
+
+# Build shop room
+static func build_shop_room(tilemap: TileMapLayer, floor_source: int = 0, wall_source: int = 2):
+	build_standard_room(tilemap, floor_source, wall_source)
+	# Display shelves
+	for x in range(5, 8):
+		tilemap.set_cell(Vector2i(x, 6), TileSource.PLATFORM, Vector2i(0, 0))
+	for x in range(12, 15):
+		tilemap.set_cell(Vector2i(x, 6), TileSource.PLATFORM, Vector2i(0, 0))
+
 # Create a ready-to-use TileMapLayer node
 static func create_room_tilemap(layout: String = "standard", floor_source: int = 0, wall_source: int = 2) -> TileMapLayer:
 	var tilemap = TileMapLayer.new()
@@ -146,6 +197,30 @@ static func create_room_tilemap(layout: String = "standard", floor_source: int =
 			build_platform_room(tilemap, 4, TileSource.PLATFORM, floor_source, wall_source)
 		"pillar":
 			build_pillar_room(tilemap, floor_source, wall_source)
+		"arena":
+			build_arena_room(tilemap, floor_source, wall_source)
+		"boss_arena":
+			build_boss_arena(tilemap, floor_source, wall_source)
+		"treasure":
+			build_treasure_room(tilemap, floor_source, wall_source)
+		"rest":
+			build_rest_room(tilemap, floor_source, wall_source)
+		"shop":
+			build_shop_room(tilemap, floor_source, wall_source)
 		_:
 			build_standard_room(tilemap, floor_source, wall_source)
+	return tilemap
+
+# Create a background tilemap layer (no collision, just visual)
+static func create_background_tilemap(wall_source: int = 3) -> TileMapLayer:
+	var tilemap = TileMapLayer.new()
+	tilemap.name = "BackgroundTileMap"
+	var tileset = TileSet.new()
+	tileset.tile_size = Vector2i(TILE_SIZE, TILE_SIZE)
+	_add_atlas_source(tileset, 0, "res://assets/dungeon_crawl/wall/brick_dark0.png", false)
+	tilemap.tile_set = tileset
+	# Fill entire room with dark wall background
+	for x in range(ROOM_WIDTH):
+		for y in range(ROOM_HEIGHT):
+			tilemap.set_cell(Vector2i(x, y), 0, Vector2i(0, 0))
 	return tilemap

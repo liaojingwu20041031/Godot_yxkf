@@ -1,10 +1,11 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/dungeon/RoomManager.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/dungeon/Door.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://player_scene" path="res://scenes/player/Player.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://skeleton_scene" path="res://scenes/enemies/Skeleton.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://scenes/props/Torch.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/props/BreakableBarrel.tscn" id="6"]
 
 [sub_resource type="RectangleShape2D" id="door_shape"]
 size = Vector2(16, 48)
@@ -12,15 +13,8 @@ size = Vector2(16, 48)
 [node name="CombatRoom_Flat" type="Node2D"]
 script = ExtResource("1")
 room_type = 1
-room_layout = "standard"
+room_layout = "arena"
 floor_variant = 1
-
-[node name="Background" type="ColorRect" parent="."]
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 640.0
-offset_bottom = 360.0
-color = Color(0.06, 0.04, 0.08, 1)
 
 [node name="EntranceDoor" type="StaticBody2D" parent="."]
 position = Vector2(40, 296)
@@ -60,10 +54,16 @@ position = Vector2(320, 180)
 position = Vector2(100, 290)
 
 [node name="Torch1" parent="PropContainer" instance=ExtResource("5")]
-position = Vector2(100, 240)
+position = Vector2(48, 288)
 
 [node name="Torch2" parent="PropContainer" instance=ExtResource("5")]
-position = Vector2(540, 240)
+position = Vector2(592, 288)
+
+[node name="Barrel1" parent="PropContainer" instance=ExtResource("6")]
+position = Vector2(160, 308)
+
+[node name="Barrel2" parent="PropContainer" instance=ExtResource("6")]
+position = Vector2(480, 308)
 
 [node name="Skeleton1" parent="EnemyContainer" instance=ExtResource("4")]
 position = Vector2(350, 298)

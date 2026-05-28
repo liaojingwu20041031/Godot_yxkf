@@ -39,6 +39,7 @@ func _on_body_exited(body: Node2D):
 
 func _unhandled_input(event):
 	if player_nearby and not is_opened and event.is_action_pressed("interact"):
+		get_viewport().set_input_as_handled()
 		open()
 
 func open():
