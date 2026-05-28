@@ -31,6 +31,7 @@ position = Vector2(600, 296)
 collision_layer = 4
 script = ExtResource("2")
 is_open = true
+target_room_type = "COMBAT"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDoor"]
 shape = SubResource("door_shape")
