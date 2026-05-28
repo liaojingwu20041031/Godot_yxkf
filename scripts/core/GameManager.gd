@@ -4,7 +4,7 @@ enum GameState { MENU, PLAYING, PAUSED, REWARD, BOSS, GAME_OVER, VICTORY }
 
 var current_state: GameState = GameState.MENU
 var current_room_index: int = 0
-var total_rooms: int = 8
+var total_rooms: int = 8  # matches GameRoot.run_sequence.size()
 var gold: int = 0
 var keys: int = 0
 var potions: int = 0

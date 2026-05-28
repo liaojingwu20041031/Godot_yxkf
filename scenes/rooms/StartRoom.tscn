@@ -3,12 +3,7 @@
 [ext_resource type="Script" path="res://scripts/dungeon/RoomManager.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/dungeon/Door.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://player_scene" path="res://scenes/player/Player.tscn" id="3"]
-
-[sub_resource type="RectangleShape2D" id="floor_shape"]
-size = Vector2(640, 16)
-
-[sub_resource type="RectangleShape2D" id="wall_shape"]
-size = Vector2(16, 360)
+[ext_resource type="PackedScene" path="res://scenes/props/Torch.tscn" id="4"]
 
 [sub_resource type="RectangleShape2D" id="door_shape"]
 size = Vector2(16, 48)
@@ -16,71 +11,30 @@ size = Vector2(16, 48)
 [node name="StartRoom" type="Node2D"]
 script = ExtResource("1")
 room_type = 0
+room_layout = "standard"
+floor_variant = 0
 
 [node name="Background" type="ColorRect" parent="."]
-position = Vector2(-320, -180)
-size = Vector2(640, 360)
-color = Color(0.06, 0.08, 0.1, 1)
-
-[node name="Floor" type="StaticBody2D" parent="."]
-position = Vector2(320, 340)
-collision_layer = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
-shape = SubResource("floor_shape")
-
-[node name="FloorSprite" type="ColorRect" parent="Floor"]
-offset_left = -320.0
-offset_top = -8.0
-offset_right = 320.0
-offset_bottom = 8.0
-color = Color(0.25, 0.2, 0.15, 1)
-
-[node name="WallLeft" type="StaticBody2D" parent="."]
-position = Vector2(8, 180)
-collision_layer = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
-shape = SubResource("wall_shape")
-
-[node name="WallSprite" type="ColorRect" parent="WallLeft"]
-offset_left = -8.0
-offset_top = -180.0
-offset_right = 8.0
-offset_bottom = 180.0
-color = Color(0.2, 0.18, 0.12, 1)
-
-[node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(632, 180)
-collision_layer = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
-shape = SubResource("wall_shape")
-
-[node name="WallSprite" type="ColorRect" parent="WallRight"]
-offset_left = -8.0
-offset_top = -180.0
-offset_right = 8.0
-offset_bottom = 180.0
-color = Color(0.2, 0.18, 0.12, 1)
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 640.0
+offset_bottom = 360.0
+color = Color(0.04, 0.05, 0.08, 1)
 
 [node name="EntranceDoor" type="StaticBody2D" parent="."]
-position = Vector2(40, 310)
+position = Vector2(40, 296)
 collision_layer = 4
+script = ExtResource("2")
+is_open = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EntranceDoor"]
 shape = SubResource("door_shape")
 disabled = true
 
-[node name="Sprite2D" type="ColorRect" parent="EntranceDoor"]
-offset_left = -8.0
-offset_top = -24.0
-offset_right = 8.0
-offset_bottom = 24.0
-color = Color(0.5, 0.35, 0.2, 1)
+[node name="Sprite2D" type="Sprite2D" parent="EntranceDoor"]
 
 [node name="ExitDoor" type="StaticBody2D" parent="."]
-position = Vector2(600, 310)
+position = Vector2(600, 296)
 collision_layer = 4
 script = ExtResource("2")
 is_open = true
@@ -89,12 +43,7 @@ is_open = true
 shape = SubResource("door_shape")
 disabled = true
 
-[node name="Sprite2D" type="ColorRect" parent="ExitDoor"]
-offset_left = -8.0
-offset_top = -24.0
-offset_right = 8.0
-offset_bottom = 24.0
-color = Color(0.4, 0.6, 0.3, 1)
+[node name="Sprite2D" type="Sprite2D" parent="ExitDoor"]
 
 [node name="ExitDetection" type="Area2D" parent="ExitDoor"]
 collision_layer = 0
@@ -105,14 +54,22 @@ shape = SubResource("door_shape")
 
 [node name="EnemyContainer" type="Node2D" parent="."]
 
+[node name="PropContainer" type="Node2D" parent="."]
+
 [node name="RewardPoint" type="Marker2D" parent="."]
-position = Vector2(320, 200)
+position = Vector2(320, 180)
 
 [node name="Player" parent="." instance=ExtResource("3")]
-position = Vector2(200, 326)
+position = Vector2(200, 290)
+
+[node name="Torch1" parent="PropContainer" instance=ExtResource("4")]
+position = Vector2(100, 240)
+
+[node name="Torch2" parent="PropContainer" instance=ExtResource("4")]
+position = Vector2(540, 240)
 
 [node name="InfoLabel" type="Label" parent="."]
-position = Vector2(250, 200)
+position = Vector2(250, 170)
 theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
 theme_override_font_sizes/font_size = 10
 text = "→ 前进到下一个房间"

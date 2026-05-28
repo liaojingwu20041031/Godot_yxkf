@@ -5,16 +5,27 @@ var player: CharacterBody2D = null
 var camera: Camera2D = null
 var room_index: int = 0
 
-var room_sequence: Array[String] = [
-	"res://scenes/rooms/StartRoom.tscn",
-	"res://scenes/rooms/CombatRoom.tscn",
-	"res://scenes/rooms/EliteRoom.tscn",
-	"res://scenes/rooms/TreasureRoom.tscn",
-	"res://scenes/rooms/CombatRoom.tscn",
-	"res://scenes/rooms/ShopRoom.tscn",
-	"res://scenes/rooms/RestRoom.tscn",
-	"res://scenes/rooms/BossRoom.tscn",
+# Room pool: type -> array of scene paths
+var room_pools: Dictionary = {
+	"START": ["res://scenes/rooms/StartRoom.tscn"],
+	"COMBAT": [
+		"res://scenes/rooms/CombatRoom_Flat.tscn",
+		"res://scenes/rooms/CombatRoom_Platform.tscn",
+		"res://scenes/rooms/CombatRoom_Pit.tscn",
+	],
+	"TREASURE": ["res://scenes/rooms/TreasureRoom.tscn"],
+	"SHOP": ["res://scenes/rooms/ShopRoom.tscn"],
+	"REST": ["res://scenes/rooms/RestRoom.tscn"],
+	"BOSS": ["res://scenes/rooms/BossRoom.tscn"],
+}
+
+# Sequence of room types for a run
+var run_sequence: Array[String] = [
+	"START", "COMBAT", "COMBAT", "TREASURE",
+	"COMBAT", "SHOP", "REST", "BOSS"
 ]
+
+var _last_picked: Dictionary = {}
 
 func _ready():
 	EventBus.room_cleared.connect(_on_room_cleared)
@@ -22,8 +33,24 @@ func _ready():
 	camera = $Camera2D
 	_load_room(0)
 
+func _pick_room_scene(room_type: String) -> String:
+	var pool = room_pools.get(room_type, [])
+	if pool.is_empty():
+		push_error("No rooms in pool for type: " + room_type)
+		return ""
+	if pool.size() == 1:
+		return pool[0]
+	var pick = pool[randi() % pool.size()]
+	# Avoid picking the same room twice in a row
+	var attempts = 0
+	while pick == _last_picked.get(room_type, "") and attempts < 10:
+		pick = pool[randi() % pool.size()]
+		attempts += 1
+	_last_picked[room_type] = pick
+	return pick
+
 func _load_room(index: int):
-	if index >= room_sequence.size():
+	if index >= run_sequence.size():
 		EventBus.game_over.emit(true)
 		return
 
@@ -35,8 +62,13 @@ func _load_room(index: int):
 		current_room = null
 		player = null
 
-	# Load new room scene
-	var scene_path = room_sequence[index]
+	# Pick random room from pool
+	var room_type = run_sequence[index]
+	var scene_path = _pick_room_scene(room_type)
+	if scene_path.is_empty():
+		push_error("Failed to pick room for type: " + room_type)
+		return
+
 	var scene = load(scene_path)
 	if scene == null:
 		push_error("Failed to load room: " + scene_path)
@@ -50,9 +82,7 @@ func _load_room(index: int):
 
 	# Update GameManager
 	GameManager.current_room_index = index
-	var room_types = ["START", "COMBAT", "ELITE", "TREASURE", "COMBAT", "SHOP", "REST", "BOSS"]
-	if index < room_types.size():
-		EventBus.room_entered.emit(room_types[index])
+	EventBus.room_entered.emit(room_type)
 
 func _find_player():
 	# Find existing player in the room

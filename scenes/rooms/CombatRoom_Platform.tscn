@@ -1,17 +1,19 @@
-[gd_scene load_steps=4 format=3 uid="uid://shop_room"]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/dungeon/RoomManager.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/dungeon/Door.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://player_scene" path="res://scenes/player/Player.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/props/Torch.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://skeleton_scene" path="res://scenes/enemies/Skeleton.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://bat_scene" path="res://scenes/enemies/Bat.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://spider_scene" path="res://scenes/enemies/Spider.tscn" id="6"]
 
 [sub_resource type="RectangleShape2D" id="door_shape"]
 size = Vector2(16, 48)
 
-[node name="ShopRoom" type="Node2D"]
+[node name="CombatRoom_Platform" type="Node2D"]
 script = ExtResource("1")
-room_type = 4
-room_layout = "standard"
+room_type = 1
+room_layout = "platform"
 floor_variant = 0
 
 [node name="Background" type="ColorRect" parent="."]
@@ -19,17 +21,15 @@ offset_left = 0.0
 offset_top = 0.0
 offset_right = 640.0
 offset_bottom = 360.0
-color = Color(0.04, 0.06, 0.04, 1)
+color = Color(0.05, 0.04, 0.08, 1)
 
 [node name="EntranceDoor" type="StaticBody2D" parent="."]
 position = Vector2(40, 296)
 collision_layer = 4
 script = ExtResource("2")
-is_open = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EntranceDoor"]
 shape = SubResource("door_shape")
-disabled = true
 
 [node name="Sprite2D" type="Sprite2D" parent="EntranceDoor"]
 
@@ -37,11 +37,9 @@ disabled = true
 position = Vector2(600, 296)
 collision_layer = 4
 script = ExtResource("2")
-is_open = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDoor"]
 shape = SubResource("door_shape")
-disabled = true
 
 [node name="Sprite2D" type="Sprite2D" parent="ExitDoor"]
 
@@ -60,38 +58,13 @@ shape = SubResource("door_shape")
 position = Vector2(320, 180)
 
 [node name="Player" parent="." instance=ExtResource("3")]
-position = Vector2(200, 290)
+position = Vector2(100, 290)
 
-[node name="Torch1" parent="PropContainer" instance=ExtResource("4")]
-position = Vector2(100, 240)
+[node name="Skeleton1" parent="EnemyContainer" instance=ExtResource("4")]
+position = Vector2(320, 298)
 
-[node name="Torch2" parent="PropContainer" instance=ExtResource("4")]
-position = Vector2(540, 240)
+[node name="Bat1" parent="EnemyContainer" instance=ExtResource("5")]
+position = Vector2(280, 200)
 
-[node name="Shopkeeper" type="Area2D" parent="."]
-position = Vector2(320, 290)
-collision_layer = 0
-collision_mask = 1
-
-[node name="ShopkeeperSprite" type="ColorRect" parent="Shopkeeper"]
-offset_left = -10.0
-offset_top = -20.0
-offset_right = 10.0
-offset_bottom = 0.0
-color = Color(0.4, 0.6, 0.8, 1)
-
-[node name="ShopLabel" type="Label" parent="Shopkeeper"]
-offset_left = -30.0
-offset_top = -35.0
-offset_right = 30.0
-offset_bottom = -20.0
-theme_override_colors/font_color = Color(0.5, 0.8, 1, 1)
-theme_override_font_sizes/font_size = 8
-text = "按 E 交易"
-horizontal_alignment = 1
-
-[node name="ShopTitle" type="Label" parent="."]
-position = Vector2(270, 40)
-theme_override_colors/font_color = Color(0.3, 0.8, 0.5, 1)
-theme_override_font_sizes/font_size = 12
-text = "商店"
+[node name="Spider1" parent="EnemyContainer" instance=ExtResource("6")]
+position = Vector2(460, 116)

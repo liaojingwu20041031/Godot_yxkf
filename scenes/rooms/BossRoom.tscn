@@ -1,14 +1,10 @@
 [gd_scene load_steps=5 format=3 uid="uid://boss_room"]
 
 [ext_resource type="Script" path="res://scripts/dungeon/RoomManager.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://player_scene" path="res://scenes/player/Player.tscn" id="2"]
-[ext_resource type="PackedScene" uid="uid://boss_scene" path="res://scenes/enemies/Boss.tscn" id="3"]
-
-[sub_resource type="RectangleShape2D" id="floor_shape"]
-size = Vector2(640, 16)
-
-[sub_resource type="RectangleShape2D" id="wall_shape"]
-size = Vector2(16, 360)
+[ext_resource type="Script" path="res://scripts/dungeon/Door.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://player_scene" path="res://scenes/player/Player.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://boss_scene" path="res://scenes/enemies/Boss.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/props/Torch.tscn" id="5"]
 
 [sub_resource type="RectangleShape2D" id="door_shape"]
 size = Vector2(16, 48)
@@ -16,75 +12,41 @@ size = Vector2(16, 48)
 [node name="BossRoom" type="Node2D"]
 script = ExtResource("1")
 room_type = 7
+room_layout = "pillar"
+floor_variant = 1
 
 [node name="Background" type="ColorRect" parent="."]
-position = Vector2(-320, -180)
-size = Vector2(640, 360)
-color = Color(0.12, 0.05, 0.08, 1)
-
-[node name="Floor" type="StaticBody2D" parent="."]
-position = Vector2(320, 340)
-collision_layer = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
-shape = SubResource("floor_shape")
-
-[node name="FloorSprite" type="ColorRect" parent="Floor"]
-offset_left = -320.0
-offset_top = -8.0
-offset_right = 320.0
-offset_bottom = 8.0
-color = Color(0.2, 0.12, 0.1, 1)
-
-[node name="WallLeft" type="StaticBody2D" parent="."]
-position = Vector2(8, 180)
-collision_layer = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
-shape = SubResource("wall_shape")
-
-[node name="WallSprite" type="ColorRect" parent="WallLeft"]
-offset_left = -8.0
-offset_top = -180.0
-offset_right = 8.0
-offset_bottom = 180.0
-color = Color(0.18, 0.1, 0.08, 1)
-
-[node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(632, 180)
-collision_layer = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
-shape = SubResource("wall_shape")
-
-[node name="WallSprite" type="ColorRect" parent="WallRight"]
-offset_left = -8.0
-offset_top = -180.0
-offset_right = 8.0
-offset_bottom = 180.0
-color = Color(0.18, 0.1, 0.08, 1)
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 640.0
+offset_bottom = 360.0
+color = Color(0.1, 0.04, 0.04, 1)
 
 [node name="EntranceDoor" type="StaticBody2D" parent="."]
-position = Vector2(40, 310)
+position = Vector2(40, 296)
 collision_layer = 4
+script = ExtResource("2")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EntranceDoor"]
 shape = SubResource("door_shape")
 
-[node name="Sprite2D" type="ColorRect" parent="EntranceDoor"]
-offset_left = -8.0
-offset_top = -24.0
-offset_right = 8.0
-offset_bottom = 24.0
-color = Color(0.5, 0.2, 0.2, 1)
+[node name="Sprite2D" type="Sprite2D" parent="EntranceDoor"]
 
 [node name="EnemyContainer" type="Node2D" parent="."]
 
+[node name="PropContainer" type="Node2D" parent="."]
+
 [node name="RewardPoint" type="Marker2D" parent="."]
-position = Vector2(320, 200)
+position = Vector2(320, 180)
 
-[node name="Player" parent="." instance=ExtResource("2")]
-position = Vector2(100, 326)
+[node name="Player" parent="." instance=ExtResource("3")]
+position = Vector2(150, 290)
 
-[node name="Boss" parent="EnemyContainer" instance=ExtResource("3")]
+[node name="Torch1" parent="PropContainer" instance=ExtResource("5")]
+position = Vector2(100, 240)
+
+[node name="Torch2" parent="PropContainer" instance=ExtResource("5")]
+position = Vector2(540, 240)
+
+[node name="Boss" parent="EnemyContainer" instance=ExtResource("4")]
 position = Vector2(450, 280)

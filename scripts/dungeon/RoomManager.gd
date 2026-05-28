@@ -6,9 +6,10 @@ signal all_enemies_dead
 enum RoomType { START, COMBAT, ELITE, TREASURE, SHOP, REST, SHRINE, BOSS }
 
 @export var room_type: RoomType = RoomType.COMBAT
+@export var room_layout: String = "standard"
+@export var floor_variant: int = 0
 @export var enemies_to_spawn: Array[PackedScene] = []
 @export var spawn_points: Array[Vector2] = []
-@export var use_tilemap: bool = true
 
 var enemies_alive: int = 0
 var is_cleared: bool = false
@@ -21,9 +22,8 @@ var tracked_enemies: Array[Node] = []
 @onready var reward_point: Marker2D = get_node_or_null("RewardPoint")
 
 func _ready():
-	# Setup TileMap if enabled
-	if use_tilemap:
-		_setup_tilemap()
+	# Generate tilemap using DungeonTileset
+	_setup_tilemap()
 
 	# Exit door starts closed
 	if exit_door and exit_door.has_method("close"):
@@ -46,42 +46,19 @@ func _ready():
 
 	if room_type == RoomType.COMBAT or room_type == RoomType.ELITE or room_type == RoomType.BOSS:
 		call_deferred("activate")
+	elif room_type == RoomType.TREASURE:
+		call_deferred("activate")
+	elif room_type == RoomType.SHOP:
+		call_deferred("activate")
+	elif room_type == RoomType.REST:
+		call_deferred("activate")
 
 func _setup_tilemap():
 	if has_node("DungeonTileMap"):
 		return
-	var tilemap = TileMapLayer.new()
-	tilemap.name = "DungeonTileMap"
-	var tileset = TileSet.new()
-	tileset.tile_size = Vector2i(32, 32)
-	tileset.add_physics_layer(0)
-	tileset.set_physics_layer_collision_layer(0, 3)
-	var floor_tex = load("res://assets/dungeon_crawl/floor/floor_sand_stone0.png")
-	if floor_tex:
-		var src = TileSetAtlasSource.new()
-		src.texture = floor_tex
-		src.texture_region_size = Vector2i(32, 32)
-		src.create_tile(Vector2i(0, 0))
-		tileset.add_source(src, 0)
-	var wall_tex = load("res://assets/dungeon_crawl/wall/brick_brown0.png")
-	if wall_tex:
-		var src = TileSetAtlasSource.new()
-		src.texture = wall_tex
-		src.texture_region_size = Vector2i(32, 32)
-		src.create_tile(Vector2i(0, 0))
-		var td = src.get_tile_data(Vector2i(0, 0), 0)
-		td.set_collision_polygons_count(0, 1)
-		td.set_collision_polygon_points(0, 0, PackedVector2Array([Vector2(0,0), Vector2(32,0), Vector2(32,32), Vector2(0,32)]))
-		tileset.add_source(src, 1)
-	tilemap.tile_set = tileset
-	for x in range(20):
-		tilemap.set_cell(Vector2i(x, 11), 0, Vector2i(0, 0))
-		tilemap.set_cell(Vector2i(x, 10), 0, Vector2i(0, 0))
-	for y in range(12):
-		tilemap.set_cell(Vector2i(0, y), 1, Vector2i(0, 0))
-		tilemap.set_cell(Vector2i(19, y), 1, Vector2i(0, 0))
-	for x in range(20):
-		tilemap.set_cell(Vector2i(x, 0), 1, Vector2i(0, 0))
+	var floor_source = floor_variant if floor_variant >= 0 else 0
+	var wall_source = 2 if floor_variant == 0 else 3
+	var tilemap = DungeonTileset.create_room_tilemap(room_layout, floor_source, wall_source)
 	add_child(tilemap)
 	move_child(tilemap, 0)
 
@@ -139,6 +116,34 @@ func _spawn_enemies():
 		enemies_alive += 1
 		tracked_enemies.append(enemy)
 
+func _spawn_treasure():
+	# Find chest in PropContainer and connect
+	var prop_container = get_node_or_null("PropContainer")
+	if prop_container:
+		for prop in prop_container.get_children():
+			if prop.has_signal("opened"):
+				prop.opened.connect(_on_treasure_opened)
+	# Treasure room is safe - mark as cleared immediately
+	is_cleared = true
+
+func _spawn_shop():
+	# Shop room - no enemies, mark as cleared
+	is_cleared = true
+
+func _spawn_rest():
+	# Rest room - heal player
+	var player = get_tree().get_first_node_in_group("player")
+	if player:
+		if player.has_method("heal"):
+			player.heal(50)
+		elif player.get("current_health") != null:
+			player.current_health = min(player.current_health + 50, player.max_health)
+	is_cleared = true
+
+func _on_treasure_opened():
+	# Treasure collected - room is done
+	pass
+
 func _on_enemy_died(enemy: Node):
 	if enemy in tracked_enemies:
 		tracked_enemies.erase(enemy)
@@ -164,15 +169,6 @@ func _generate_rewards() -> Array:
 	if upgrade_manager:
 		rewards = upgrade_manager.get_random_upgrades(3)
 	return rewards
-
-func _spawn_treasure():
-	pass
-
-func _spawn_shop():
-	pass
-
-func _spawn_rest():
-	pass
 
 func _on_exit_body_entered(body: Node2D):
 	if body.is_in_group("player") and is_cleared:
