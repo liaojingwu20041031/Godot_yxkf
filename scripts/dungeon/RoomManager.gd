@@ -25,20 +25,6 @@ func _ready():
 	# Generate tilemap using DungeonTileset
 	_setup_tilemap()
 
-	# Exit door starts closed (except for safe rooms)
-	if room_type == RoomType.START:
-		# Start room: both doors open
-		if exit_door and exit_door.has_method("open"):
-			exit_door.open()
-	else:
-		# Combat/treasure/etc: exit closed until cleared
-		if exit_door and exit_door.has_method("close"):
-			exit_door.close()
-
-	# Entrance door starts open
-	if entrance_door and entrance_door.has_method("open"):
-		entrance_door.open()
-
 	# Connect exit detection area
 	if exit_door and exit_door.has_node("ExitDetection"):
 		var exit_detection = exit_door.get_node("ExitDetection")
@@ -46,14 +32,43 @@ func _ready():
 
 	EventBus.enemy_died.connect(_on_enemy_died)
 
-	if room_type == RoomType.COMBAT or room_type == RoomType.ELITE or room_type == RoomType.BOSS:
-		call_deferred("activate")
-	elif room_type == RoomType.TREASURE:
-		call_deferred("activate")
-	elif room_type == RoomType.SHOP:
-		call_deferred("activate")
-	elif room_type == RoomType.REST:
-		call_deferred("activate")
+	# Setup doors and room logic based on type
+	match room_type:
+		RoomType.START:
+			# Safe room: both doors open, immediately clearable
+			if entrance_door and entrance_door.has_method("open"):
+				entrance_door.open()
+			if exit_door and exit_door.has_method("open"):
+				exit_door.open()
+			is_cleared = true
+		RoomType.COMBAT, RoomType.ELITE, RoomType.BOSS:
+			# Combat: entrance open, exit closed until enemies dead
+			if entrance_door and entrance_door.has_method("open"):
+				entrance_door.open()
+			if exit_door and exit_door.has_method("close"):
+				exit_door.close()
+			call_deferred("activate")
+		RoomType.TREASURE:
+			# Treasure: entrance open, exit closed until chest opened
+			if entrance_door and entrance_door.has_method("open"):
+				entrance_door.open()
+			if exit_door and exit_door.has_method("close"):
+				exit_door.close()
+			call_deferred("activate")
+		RoomType.SHOP, RoomType.REST:
+			# Safe rooms: both doors open
+			if entrance_door and entrance_door.has_method("open"):
+				entrance_door.open()
+			if exit_door and exit_door.has_method("open"):
+				exit_door.open()
+			call_deferred("activate")
+		_:
+			# Default: both doors open
+			if entrance_door and entrance_door.has_method("open"):
+				entrance_door.open()
+			if exit_door and exit_door.has_method("open"):
+				exit_door.open()
+			is_cleared = true
 
 func _setup_tilemap():
 	# Add main collision tilemap
