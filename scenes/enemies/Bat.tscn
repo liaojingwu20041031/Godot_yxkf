@@ -1,0 +1,48 @@
+[gd_scene load_steps=5 format=3 uid="uid://bat_scene"]
+
+[ext_resource type="Script" path="res://scripts/enemies/Bat.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/combat/Hurtbox.gd" id="2"]
+
+[sub_resource type="CircleShape2D" id="bat_body"]
+radius = 8.0
+
+[sub_resource type="CircleShape2D" id="detection_shape"]
+radius = 130.0
+
+[sub_resource type="CircleShape2D" id="attack_shape"]
+radius = 20.0
+
+[sub_resource type="CircleShape2D" id="hurtbox_shape"]
+radius = 10.0
+
+[node name="Bat" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("bat_body")
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("detection_shape")
+
+[node name="AttackArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+shape = SubResource("attack_shape")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+script = ExtResource("2")
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("hurtbox_shape")

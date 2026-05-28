@@ -1,0 +1,53 @@
+[gd_scene load_steps=5 format=3 uid="uid://boss_scene"]
+
+[ext_resource type="Script" path="res://scripts/enemies/BossBase.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/combat/Hurtbox.gd" id="2"]
+
+[sub_resource type="RectangleShape2D" id="boss_body"]
+size = Vector2(24, 40)
+
+[sub_resource type="CircleShape2D" id="detection_shape"]
+radius = 300.0
+
+[sub_resource type="RectangleShape2D" id="attack_shape"]
+size = Vector2(50, 40)
+
+[sub_resource type="RectangleShape2D" id="hurtbox_shape"]
+size = Vector2(28, 44)
+
+[node name="Boss" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1")
+max_health = 450
+attack_power = 18
+move_speed = 80.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(1.5, 1.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("boss_body")
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("detection_shape")
+
+[node name="AttackArea" type="Area2D" parent="."]
+position = Vector2(30, 0)
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+shape = SubResource("attack_shape")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+script = ExtResource("2")
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("hurtbox_shape")

@@ -1,0 +1,116 @@
+[gd_scene load_steps=3 format=3 uid="uid://rest_room"]
+
+[ext_resource type="PackedScene" uid="uid://player_scene" path="res://scenes/player/Player.tscn" id="1"]
+
+[sub_resource type="RectangleShape2D" id="floor_shape"]
+size = Vector2(640, 16)
+
+[sub_resource type="RectangleShape2D" id="wall_shape"]
+size = Vector2(16, 360)
+
+[sub_resource type="RectangleShape2D" id="door_shape"]
+size = Vector2(16, 48)
+
+[sub_resource type="CircleShape2D" id="campfire_shape"]
+radius = 20.0
+
+[node name="RestRoom" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(320, 180)
+
+[node name="Background" type="ColorRect" parent="."]
+position = Vector2(-320, -180)
+size = Vector2(640, 360)
+color = Color(0.06, 0.06, 0.08, 1)
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(320, 340)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("floor_shape")
+
+[node name="FloorSprite" type="ColorRect" parent="Floor"]
+offset_left = -320.0
+offset_top = -8.0
+offset_right = 320.0
+offset_bottom = 8.0
+color = Color(0.25, 0.2, 0.15, 1)
+
+[node name="WallLeft" type="StaticBody2D" parent="."]
+position = Vector2(8, 180)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
+shape = SubResource("wall_shape")
+
+[node name="WallSprite" type="ColorRect" parent="WallLeft"]
+offset_left = -8.0
+offset_top = -180.0
+offset_right = 8.0
+offset_bottom = 180.0
+color = Color(0.2, 0.18, 0.12, 1)
+
+[node name="WallRight" type="StaticBody2D" parent="."]
+position = Vector2(632, 180)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+shape = SubResource("wall_shape")
+
+[node name="WallSprite" type="ColorRect" parent="WallRight"]
+offset_left = -8.0
+offset_top = -180.0
+offset_right = 8.0
+offset_bottom = 180.0
+color = Color(0.2, 0.18, 0.12, 1)
+
+[node name="ExitDoor" type="StaticBody2D" parent="."]
+position = Vector2(600, 310)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDoor"]
+shape = SubResource("door_shape")
+disabled = true
+
+[node name="Sprite2D" type="ColorRect" parent="ExitDoor"]
+offset_left = -8.0
+offset_top = -24.0
+offset_right = 8.0
+offset_bottom = 24.0
+color = Color(0.4, 0.6, 0.3, 1)
+
+[node name="Campfire" type="Area2D" parent="."]
+position = Vector2(320, 310)
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Campfire"]
+shape = SubResource("campfire_shape")
+
+[node name="FireSprite" type="ColorRect" parent="Campfire"]
+offset_left = -10.0
+offset_top = -15.0
+offset_right = 10.0
+offset_bottom = 0.0
+color = Color(1, 0.5, 0.2, 1)
+
+[node name="FireLabel" type="Label" parent="Campfire"]
+offset_left = -40.0
+offset_top = -30.0
+offset_right = 40.0
+offset_bottom = -15.0
+theme_override_colors/font_color = Color(1, 0.7, 0.3, 1)
+theme_override_font_sizes/font_size = 8
+text = "按 E 休息"
+horizontal_alignment = 1
+
+[node name="Player" parent="." instance=ExtResource("1")]
+position = Vector2(200, 326)
+
+[node name="RestLabel" type="Label" parent="."]
+position = Vector2(280, 50)
+theme_override_colors/font_color = Color(0.5, 0.7, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "休息房间"

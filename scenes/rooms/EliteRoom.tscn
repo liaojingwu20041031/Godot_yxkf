@@ -1,0 +1,117 @@
+[gd_scene load_steps=4 format=3 uid="uid://elite_room"]
+
+[ext_resource type="Script" path="res://scripts/dungeon/RoomManager.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://player_scene" path="res://scenes/player/Player.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://shieldguard_scene" path="res://scenes/enemies/ShieldGuard.tscn" id="3"]
+
+[sub_resource type="RectangleShape2D" id="floor_shape"]
+size = Vector2(640, 16)
+
+[sub_resource type="RectangleShape2D" id="wall_shape"]
+size = Vector2(16, 360)
+
+[sub_resource type="RectangleShape2D" id="door_shape"]
+size = Vector2(16, 48)
+
+[node name="EliteRoom" type="Node2D"]
+script = ExtResource("1")
+room_type = 2
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(320, 180)
+
+[node name="Background" type="ColorRect" parent="."]
+position = Vector2(-320, -180)
+size = Vector2(640, 360)
+color = Color(0.1, 0.05, 0.08, 1)
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(320, 340)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("floor_shape")
+
+[node name="FloorSprite" type="ColorRect" parent="Floor"]
+offset_left = -320.0
+offset_top = -8.0
+offset_right = 320.0
+offset_bottom = 8.0
+color = Color(0.25, 0.2, 0.15, 1)
+
+[node name="WallLeft" type="StaticBody2D" parent="."]
+position = Vector2(8, 180)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
+shape = SubResource("wall_shape")
+
+[node name="WallSprite" type="ColorRect" parent="WallLeft"]
+offset_left = -8.0
+offset_top = -180.0
+offset_right = 8.0
+offset_bottom = 180.0
+color = Color(0.2, 0.18, 0.12, 1)
+
+[node name="WallRight" type="StaticBody2D" parent="."]
+position = Vector2(632, 180)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+shape = SubResource("wall_shape")
+
+[node name="WallSprite" type="ColorRect" parent="WallRight"]
+offset_left = -8.0
+offset_top = -180.0
+offset_right = 8.0
+offset_bottom = 180.0
+color = Color(0.2, 0.18, 0.12, 1)
+
+[node name="EntranceDoor" type="StaticBody2D" parent="."]
+position = Vector2(40, 310)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EntranceDoor"]
+shape = SubResource("door_shape")
+disabled = true
+
+[node name="Sprite2D" type="ColorRect" parent="EntranceDoor"]
+offset_left = -8.0
+offset_top = -24.0
+offset_right = 8.0
+offset_bottom = 24.0
+color = Color(0.5, 0.35, 0.2, 1)
+
+[node name="ExitDoor" type="StaticBody2D" parent="."]
+position = Vector2(600, 310)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDoor"]
+shape = SubResource("door_shape")
+
+[node name="Sprite2D" type="ColorRect" parent="ExitDoor"]
+offset_left = -8.0
+offset_top = -24.0
+offset_right = 8.0
+offset_bottom = 24.0
+color = Color(0.6, 0.3, 0.3, 1)
+
+[node name="EnemyContainer" type="Node2D" parent="."]
+
+[node name="RewardPoint" type="Marker2D" parent="."]
+position = Vector2(320, 200)
+
+[node name="Player" parent="." instance=ExtResource("2")]
+position = Vector2(100, 326)
+
+[node name="ShieldGuard1" parent="EnemyContainer" instance=ExtResource("3")]
+position = Vector2(400, 326)
+
+[node name="ShieldGuard2" parent="EnemyContainer" instance=ExtResource("3")]
+position = Vector2(500, 326)
+
+[node name="EliteLabel" type="Label" parent="."]
+position = Vector2(270, 50)
+theme_override_colors/font_color = Color(0.9, 0.3, 0.3, 1)
+theme_override_font_sizes/font_size = 12
+text = "精英房间"

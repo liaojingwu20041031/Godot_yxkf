@@ -1,0 +1,151 @@
+{
+  "upgrades": [
+    {
+      "id": "steel_body",
+      "name": "钢铁之躯",
+      "description": "最大生命 +20",
+      "rarity": "common",
+      "category": "survival",
+      "effect": {"type": "stat", "stat": "max_health", "value": 20}
+    },
+    {
+      "id": "sharp_blade",
+      "name": "锋利剑刃",
+      "description": "攻击力 +3",
+      "rarity": "common",
+      "category": "attack",
+      "effect": {"type": "stat", "stat": "attack_power", "value": 3}
+    },
+    {
+      "id": "light_feet",
+      "name": "轻盈脚步",
+      "description": "移动速度 +10%",
+      "rarity": "common",
+      "category": "movement",
+      "effect": {"type": "stat_percent", "stat": "move_speed", "value": 0.1}
+    },
+    {
+      "id": "shadow_step",
+      "name": "暗影步",
+      "description": "冲刺期间无敌",
+      "rarity": "rare",
+      "category": "dash",
+      "effect": {"type": "ability", "ability": "dash_invulnerable"}
+    },
+    {
+      "id": "roll_master",
+      "name": "翻滚大师",
+      "description": "翻滚冷却 -20%",
+      "rarity": "rare",
+      "category": "roll",
+      "effect": {"type": "stat_percent", "stat": "roll_cooldown", "value": -0.2}
+    },
+    {
+      "id": "backstab",
+      "name": "背刺时刻",
+      "description": "翻滚后下一击暴击",
+      "rarity": "rare",
+      "category": "roll",
+      "effect": {"type": "ability", "ability": "roll_crit"}
+    },
+    {
+      "id": "double_jump",
+      "name": "二段跳",
+      "description": "空中可再次跳跃",
+      "rarity": "epic",
+      "category": "movement",
+      "effect": {"type": "ability", "ability": "double_jump"}
+    },
+    {
+      "id": "air_slash",
+      "name": "空中斩击",
+      "description": "空中攻击伤害 +30%",
+      "rarity": "rare",
+      "category": "attack",
+      "effect": {"type": "ability", "ability": "air_attack_boost"}
+    },
+    {
+      "id": "fire_sword",
+      "name": "火焰剑",
+      "description": "攻击附带燃烧",
+      "rarity": "epic",
+      "category": "element",
+      "effect": {"type": "element", "element": "fire", "chance": 0.25}
+    },
+    {
+      "id": "poison_blade",
+      "name": "毒刃",
+      "description": "攻击附带中毒",
+      "rarity": "rare",
+      "category": "element",
+      "effect": {"type": "element", "element": "poison", "chance": 0.3}
+    },
+    {
+      "id": "lifesteal",
+      "name": "吸血符文",
+      "description": "击杀回复 5 生命",
+      "rarity": "rare",
+      "category": "survival",
+      "effect": {"type": "on_kill", "stat": "health", "value": 5}
+    },
+    {
+      "id": "berserker",
+      "name": "狂战士",
+      "description": "生命低于 30% 时伤害 +50%",
+      "rarity": "epic",
+      "category": "risk",
+      "effect": {"type": "conditional", "condition": "low_health", "threshold": 0.3, "stat": "attack_power", "multiplier": 1.5}
+    },
+    {
+      "id": "glass_cannon",
+      "name": "玻璃剑",
+      "description": "伤害 +40%，受到伤害 +25%",
+      "rarity": "cursed",
+      "category": "risk",
+      "effect": {"type": "tradeoff", "bonus": {"stat": "attack_power", "multiplier": 1.4}, "penalty": {"stat": "defense", "multiplier": 0.75}}
+    },
+    {
+      "id": "vitality",
+      "name": "生命之力",
+      "description": "最大生命 +10，每秒回复 0.5 生命",
+      "rarity": "rare",
+      "category": "survival",
+      "effect": {"type": "compound", "effects": [
+        {"type": "stat", "stat": "max_health", "value": 10},
+        {"type": "regen", "stat": "health", "value": 0.5}
+      ]}
+    },
+    {
+      "id": "swift_blade",
+      "name": "迅捷之刃",
+      "description": "攻击速度 +15%",
+      "rarity": "rare",
+      "category": "attack",
+      "effect": {"type": "stat_percent", "stat": "attack_speed", "value": 0.15}
+    },
+    {
+      "id": "iron_wall",
+      "name": "铁壁",
+      "description": "防御 +3",
+      "rarity": "common",
+      "category": "survival",
+      "effect": {"type": "stat", "stat": "defense", "value": 3}
+    },
+    {
+      "id": "treasure_hunter",
+      "name": "寻宝者",
+      "description": "金币获取 +30%",
+      "rarity": "common",
+      "category": "economy",
+      "effect": {"type": "stat_percent", "stat": "gold_multiplier", "value": 0.3}
+    },
+    {
+      "id": "second_wind",
+      "name": "二次呼吸",
+      "description": "每清理一个房间回复 15 生命",
+      "rarity": "rare",
+      "category": "survival",
+      "effect": {"type": "on_room_clear", "stat": "health", "value": 15}
+    }
+  ]
+}

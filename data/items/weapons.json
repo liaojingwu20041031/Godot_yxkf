@@ -1,0 +1,60 @@
+{
+  "items": [
+    {
+      "id": "rusty_sword",
+      "name": "破旧铁剑",
+      "description": "一把生锈的铁剑，勉强能用。",
+      "type": "weapon",
+      "rarity": "common",
+      "slot": "weapon",
+      "price": 10,
+      "stats": {"attack": 3}
+    },
+    {
+      "id": "knight_sword",
+      "name": "骑士长剑",
+      "description": "精钢打造的骑士佩剑。",
+      "type": "weapon",
+      "rarity": "rare",
+      "slot": "weapon",
+      "price": 50,
+      "stats": {"attack": 6, "crit_chance": 0.05}
+    },
+    {
+      "id": "fire_blade",
+      "name": "燃火刃",
+      "description": "剑身燃烧着永不熄灭的火焰。",
+      "type": "weapon",
+      "rarity": "epic",
+      "slot": "weapon",
+      "price": 120,
+      "stats": {"attack": 7},
+      "effects": [{"type": "burn", "chance": 0.25, "damage": 3, "duration": 3}]
+    },
+    {
+      "id": "ash_king_sword",
+      "name": "灰烬王之剑",
+      "description": "传说中灰烬王的佩剑，击杀后短暂强化。",
+      "type": "weapon",
+      "rarity": "legendary",
+      "slot": "weapon",
+      "price": 300,
+      "stats": {"attack": 10},
+      "effects": [{"type": "on_kill", "buff": "attack_speed", "value": 0.2, "duration": 5}]
+    },
+    {
+      "id": "blood_blade",
+      "name": "饥渴血刃",
+      "description": "以生命力换取强大攻击力的诅咒之剑。",
+      "type": "weapon",
+      "rarity": "cursed",
+      "slot": "weapon",
+      "price": 0,
+      "stats": {"attack": 15},
+      "effects": [
+        {"type": "self_damage", "value": 1},
+        {"type": "on_kill", "heal": 8}
+      ]
+    }
+  ]
+}

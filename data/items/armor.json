@@ -1,0 +1,44 @@
+{
+  "items": [
+    {
+      "id": "leather_armor",
+      "name": "皮革护甲",
+      "description": "轻便的皮革护甲。",
+      "type": "armor",
+      "rarity": "common",
+      "slot": "armor",
+      "price": 15,
+      "stats": {"defense": 2}
+    },
+    {
+      "id": "chain_mail",
+      "name": "锁子甲",
+      "description": "环环相扣的锁子甲。",
+      "type": "armor",
+      "rarity": "rare",
+      "slot": "armor",
+      "price": 60,
+      "stats": {"defense": 5}
+    },
+    {
+      "id": "plate_armor",
+      "name": "板甲",
+      "description": "厚重的全身板甲。",
+      "type": "armor",
+      "rarity": "epic",
+      "slot": "armor",
+      "price": 150,
+      "stats": {"defense": 8, "max_health": 10}
+    },
+    {
+      "id": "ash_armor",
+      "name": "灰烬战甲",
+      "description": "由灰烬凝聚而成的神秘铠甲。",
+      "type": "armor",
+      "rarity": "legendary",
+      "slot": "armor",
+      "price": 350,
+      "stats": {"defense": 10, "max_health": 25}
+    }
+  ]
+}

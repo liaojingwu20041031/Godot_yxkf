@@ -1,0 +1,110 @@
+[gd_scene load_steps=3 format=3 uid="uid://shop_room"]
+
+[ext_resource type="PackedScene" uid="uid://player_scene" path="res://scenes/player/Player.tscn" id="1"]
+
+[sub_resource type="RectangleShape2D" id="floor_shape"]
+size = Vector2(640, 16)
+
+[sub_resource type="RectangleShape2D" id="wall_shape"]
+size = Vector2(16, 360)
+
+[sub_resource type="RectangleShape2D" id="door_shape"]
+size = Vector2(16, 48)
+
+[node name="ShopRoom" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(320, 180)
+
+[node name="Background" type="ColorRect" parent="."]
+position = Vector2(-320, -180)
+size = Vector2(640, 360)
+color = Color(0.06, 0.08, 0.06, 1)
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(320, 340)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("floor_shape")
+
+[node name="FloorSprite" type="ColorRect" parent="Floor"]
+offset_left = -320.0
+offset_top = -8.0
+offset_right = 320.0
+offset_bottom = 8.0
+color = Color(0.25, 0.2, 0.15, 1)
+
+[node name="WallLeft" type="StaticBody2D" parent="."]
+position = Vector2(8, 180)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
+shape = SubResource("wall_shape")
+
+[node name="WallSprite" type="ColorRect" parent="WallLeft"]
+offset_left = -8.0
+offset_top = -180.0
+offset_right = 8.0
+offset_bottom = 180.0
+color = Color(0.2, 0.18, 0.12, 1)
+
+[node name="WallRight" type="StaticBody2D" parent="."]
+position = Vector2(632, 180)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+shape = SubResource("wall_shape")
+
+[node name="WallSprite" type="ColorRect" parent="WallRight"]
+offset_left = -8.0
+offset_top = -180.0
+offset_right = 8.0
+offset_bottom = 180.0
+color = Color(0.2, 0.18, 0.12, 1)
+
+[node name="ExitDoor" type="StaticBody2D" parent="."]
+position = Vector2(600, 310)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDoor"]
+shape = SubResource("door_shape")
+disabled = true
+
+[node name="Sprite2D" type="ColorRect" parent="ExitDoor"]
+offset_left = -8.0
+offset_top = -24.0
+offset_right = 8.0
+offset_bottom = 24.0
+color = Color(0.4, 0.6, 0.3, 1)
+
+[node name="Shopkeeper" type="Area2D" parent="."]
+position = Vector2(320, 300)
+collision_layer = 0
+collision_mask = 1
+
+[node name="ShopkeeperSprite" type="ColorRect" parent="Shopkeeper"]
+offset_left = -10.0
+offset_top = -20.0
+offset_right = 10.0
+offset_bottom = 0.0
+color = Color(0.4, 0.6, 0.8, 1)
+
+[node name="ShopLabel" type="Label" parent="Shopkeeper"]
+offset_left = -30.0
+offset_top = -35.0
+offset_right = 30.0
+offset_bottom = -20.0
+theme_override_colors/font_color = Color(0.5, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 8
+text = "按 E 交易"
+horizontal_alignment = 1
+
+[node name="Player" parent="." instance=ExtResource("1")]
+position = Vector2(200, 326)
+
+[node name="ShopTitle" type="Label" parent="."]
+position = Vector2(270, 50)
+theme_override_colors/font_color = Color(0.3, 0.8, 0.5, 1)
+theme_override_font_sizes/font_size = 12
+text = "商店"

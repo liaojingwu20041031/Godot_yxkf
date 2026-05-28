@@ -1,0 +1,167 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/free_knight/_Idle.png" id="1"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_Run.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_Jump.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_Fall.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_Attack.png" id="5"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_Attack2.png" id="6"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_Dash.png" id="7"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_Roll.png" id="8"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_WallSlide.png" id="9"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_Crouch.png" id="10"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_CrouchWalk.png" id="11"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_CrouchAttack.png" id="12"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_Hit.png" id="13"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_Death.png" id="14"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_TurnAround.png" id="15"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_Slide.png" id="16"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_WallClimb.png" id="17"]
+[ext_resource type="Texture2D" path="res://assets/free_knight/_WallHang.png" id="18"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2")
+}],
+"loop": true,
+"name": &"run",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3")
+}],
+"loop": false,
+"name": &"jump",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4")
+}],
+"loop": true,
+"name": &"fall",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6")
+}],
+"loop": false,
+"name": &"attack2",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7")
+}],
+"loop": false,
+"name": &"dash",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8")
+}],
+"loop": false,
+"name": &"roll",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9")
+}],
+"loop": true,
+"name": &"wall_slide",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10")
+}],
+"loop": false,
+"name": &"crouch",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("11")
+}],
+"loop": true,
+"name": &"crouch_walk",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("12")
+}],
+"loop": false,
+"name": &"crouch_attack",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("13")
+}],
+"loop": false,
+"name": &"hit",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("14")
+}],
+"loop": false,
+"name": &"death",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("15")
+}],
+"loop": false,
+"name": &"turn",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("16")
+}],
+"loop": false,
+"name": &"slide",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("17")
+}],
+"loop": true,
+"name": &"wall_climb",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("18")
+}],
+"loop": false,
+"name": &"hang",
+"speed": 8.0
+}]
