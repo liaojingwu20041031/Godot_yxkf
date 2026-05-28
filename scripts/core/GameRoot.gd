@@ -3,7 +3,6 @@ extends Node2D
 var current_room: Node2D = null
 var player: CharacterBody2D = null
 var camera: Camera2D = null
-var room_index: int = 0
 var run_depth: int = 0
 var max_depth: int = 8
 
@@ -14,22 +13,36 @@ var room_pools: Dictionary = {
 		"res://scenes/rooms/CombatRoom_Flat.tscn",
 		"res://scenes/rooms/CombatRoom_Platform.tscn",
 		"res://scenes/rooms/CombatRoom_Pit.tscn",
+		"res://scenes/rooms/CombatRoom_Vertical.tscn",
+		"res://scenes/rooms/CombatRoom_Wide.tscn",
+		"res://scenes/rooms/TrapRoom.tscn",
 	],
 	"ELITE": [
 		"res://scenes/rooms/CombatRoom_Platform.tscn",
 		"res://scenes/rooms/CombatRoom_Pit.tscn",
+		"res://scenes/rooms/CombatRoom_Vertical.tscn",
 	],
-	"TREASURE": ["res://scenes/rooms/TreasureRoom.tscn"],
+	"TREASURE": [
+		"res://scenes/rooms/TreasureRoom.tscn",
+		"res://scenes/rooms/LockedTreasureRoom.tscn",
+	],
 	"SHOP": ["res://scenes/rooms/ShopRoom.tscn"],
 	"REST": ["res://scenes/rooms/RestRoom.tscn"],
+	"SHRINE": ["res://scenes/rooms/ShrineRoom.tscn"],
 	"BOSS": ["res://scenes/rooms/BossRoom.tscn"],
 }
 
-# Default sequence (used when no branch selected)
-var run_sequence: Array[String] = [
-	"START", "COMBAT", "COMBAT", "TREASURE",
-	"ELITE", "COMBAT", "REST", "BOSS"
-]
+# Route options by depth: what room types are available at each depth
+var route_table: Dictionary = {
+	0: ["START"],
+	1: ["COMBAT", "TREASURE"],
+	2: ["COMBAT", "SHRINE"],
+	3: ["ELITE", "SHOP"],
+	4: ["REST", "TREASURE"],
+	5: ["COMBAT", "ELITE"],
+	6: ["REST"],
+	7: ["BOSS"],
+}
 
 var _last_picked: Dictionary = {}
 
@@ -39,7 +52,7 @@ func _ready():
 	EventBus.game_over.connect(_on_game_over)
 	camera = $Camera2D
 	player = $Player
-	_load_room(0)
+	_load_room_at_depth(0)
 
 func _pick_room_scene(room_type: String) -> String:
 	var pool = room_pools.get(room_type, [])
@@ -56,8 +69,19 @@ func _pick_room_scene(room_type: String) -> String:
 	_last_picked[room_type] = pick
 	return pick
 
+func get_available_routes() -> Array[String]:
+	var routes: Array[String] = []
+	if route_table.has(run_depth + 1):
+		for r in route_table[run_depth + 1]:
+			routes.append(r)
+	if routes.is_empty():
+		# Default fallback
+		routes.append("COMBAT")
+	return routes
+
 func _load_room_by_type(room_type: String):
 	run_depth += 1
+	print("[GameRoot] Loading room: %s (depth=%d)" % [room_type, run_depth])
 	if run_depth >= max_depth:
 		EventBus.game_over.emit(true)
 		return
@@ -99,23 +123,33 @@ func _load_room_by_type(room_type: String):
 
 	GameManager.current_room_index = run_depth
 	EventBus.room_entered.emit(room_type)
+	print("[GameRoot] Room loaded: %s" % room_type)
 
-func _load_room(index: int):
-	if index >= run_sequence.size():
+func _load_room_at_depth(depth: int):
+	run_depth = depth
+	if route_table.has(depth):
+		var options = route_table[depth]
+		if options.size() == 1:
+			_load_room_by_type(options[0])
+		else:
+			_load_room_by_type(options[0])
+	else:
 		EventBus.game_over.emit(true)
-		return
-	room_index = index
-	_load_room_by_type(run_sequence[index])
 
 func _process(_delta):
 	if player and is_instance_valid(player) and camera:
 		camera.global_position = player.global_position
 
 func _on_room_cleared():
+	print("[GameRoot] room_cleared signal received")
 	await get_tree().create_timer(1.5).timeout
-	_load_room(room_index + 1)
+	var routes = get_available_routes()
+	print("[GameRoot] Available routes: %s" % str(routes))
+	if routes.size() >= 1:
+		_load_room_by_type(routes[0])
 
 func _on_room_exit_selected(target_room_type: String):
+	print("[GameRoot] room_exit_selected signal received: '%s'" % target_room_type)
 	await get_tree().create_timer(1.0).timeout
 	_load_room_by_type(target_room_type)
 

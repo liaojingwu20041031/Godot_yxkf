@@ -40,6 +40,11 @@ func _ready():
 	_tween.tween_property(_shadow, "modulate:a", 0.0, duration).set_delay(duration * 0.5)
 	_tween.chain().tween_callback(queue_free)
 
+func show_text(msg: String, col: Color = Color.WHITE, size: int = 14):
+	text = msg
+	color = col
+	font_size = size
+
 static func spawn(parent: Node, pos: Vector2, msg: String, col: Color = Color.WHITE, size: int = 14):
 	var ft = FloatingText.new()
 	ft.text = msg

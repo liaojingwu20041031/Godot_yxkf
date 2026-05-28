@@ -25,6 +25,7 @@ config/icon="res://icon.svg"
 EventBus="*res://scripts/core/EventBus.gd"
 GameManager="*res://scripts/core/GameManager.gd"
 UpgradeManager="*res://scripts/upgrades/UpgradeManager.gd"
+AssetCatalog="*res://scripts/core/AssetCatalog.gd"
 
 [display]
 

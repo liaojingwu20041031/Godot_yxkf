@@ -1,15 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://rest_room"]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/dungeon/RoomManager.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/dungeon/Door.gd" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/props/Torch.tscn" id="4"]
-[ext_resource type="Script" path="res://scripts/dungeon/props/Campfire.gd" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/props/Torch.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/props/RestCampfire.tscn" id="4"]
 
 [sub_resource type="RectangleShape2D" id="door_shape"]
 size = Vector2(16, 48)
-
-[sub_resource type="CircleShape2D" id="campfire_shape"]
-radius = 24.0
 
 [node name="RestRoom" type="Node2D"]
 script = ExtResource("1")
@@ -41,13 +38,6 @@ disabled = true
 
 [node name="Sprite2D" type="Sprite2D" parent="ExitDoor"]
 
-[node name="ExitDetection" type="Area2D" parent="ExitDoor"]
-collision_layer = 0
-collision_mask = 1
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDoor/ExitDetection"]
-shape = SubResource("door_shape")
-
 [node name="EnemyContainer" type="Node2D" parent="."]
 
 [node name="PropContainer" type="Node2D" parent="."]
@@ -58,35 +48,11 @@ position = Vector2(320, 180)
 [node name="PlayerSpawnPoint" type="Marker2D" parent="."]
 position = Vector2(160, 306)
 
-[node name="Torch1" parent="PropContainer" instance=ExtResource("4")]
+[node name="Torch1" parent="PropContainer" instance=ExtResource("3")]
 position = Vector2(48, 288)
 
-[node name="Torch2" parent="PropContainer" instance=ExtResource("4")]
+[node name="Torch2" parent="PropContainer" instance=ExtResource("3")]
 position = Vector2(592, 288)
 
-[node name="Campfire" type="Area2D" parent="."]
+[node name="Campfire" parent="PropContainer" instance=ExtResource("4")]
 position = Vector2(320, 306)
-collision_layer = 0
-collision_mask = 1
-script = ExtResource("5")
-heal_amount = 30
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Campfire"]
-shape = SubResource("campfire_shape")
-
-[node name="FireSprite" type="ColorRect" parent="Campfire"]
-offset_left = -12.0
-offset_top = -18.0
-offset_right = 12.0
-offset_bottom = 0.0
-color = Color(1, 0.5, 0.2, 1)
-
-[node name="FireLabel" type="Label" parent="Campfire"]
-offset_left = -40.0
-offset_top = -32.0
-offset_right = 40.0
-offset_bottom = -18.0
-theme_override_colors/font_color = Color(1, 0.7, 0.3, 1)
-theme_override_font_sizes/font_size = 8
-text = "按 E 休息 (+30 HP)"
-horizontal_alignment = 1

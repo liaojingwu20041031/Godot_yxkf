@@ -23,6 +23,7 @@ var tracked_enemies: Array[Node] = []
 @onready var reward_point: Marker2D = get_node_or_null("RewardPoint")
 
 var all_exit_doors: Array[StaticBody2D] = []
+var _exit_triggered: bool = false
 
 func _ready():
 	_setup_tilemap()
@@ -82,24 +83,40 @@ func _collect_exit_doors():
 		all_exit_doors.append(exit_door)
 
 func _create_exit_detections():
+	# Connect to existing ExitDetection areas in the scene
 	for door in all_exit_doors:
-		_create_exit_detection_for_door(door)
+		var existing_area = door.get_node_or_null("ExitDetection")
+		if existing_area:
+			if not existing_area.body_entered.is_connected(_on_exit_body_entered.bind(door)):
+				existing_area.body_entered.connect(_on_exit_body_entered.bind(door))
+			print("[Exit] Connected ExitDetection for %s" % door.name)
 
-func _create_exit_detection_for_door(door: StaticBody2D):
-	var exit_area = Area2D.new()
-	exit_area.name = "ExitArea_" + door.name
-	exit_area.collision_layer = 0
-	exit_area.collision_mask = 1
-	exit_area.position = door.position
+# Distance-based exit detection as fallback
+var _exit_check_timer: float = 0.0
 
-	var shape = CollisionShape2D.new()
-	var rect = RectangleShape2D.new()
-	rect.size = Vector2(32, 64)
-	shape.shape = rect
-	exit_area.add_child(shape)
+func _process(delta):
+	_exit_check_timer += delta
+	if _exit_check_timer < 0.2:
+		return
+	_exit_check_timer = 0.0
 
-	add_child(exit_area)
-	exit_area.body_entered.connect(_on_exit_body_entered.bind(door))
+	if not is_cleared:
+		return
+
+	var player = get_tree().get_first_node_in_group("player")
+	if not player:
+		return
+
+	for door in all_exit_doors:
+		if not door:
+			continue
+		var door_pos = door.global_position
+		var player_pos = player.global_position
+		var dist = door_pos.distance_to(player_pos)
+		if dist < 50.0:
+			print("[Exit] Player near door %s (dist=%.1f, is_cleared=%s)" % [door.name, dist, is_cleared])
+			_on_exit_body_entered(player, door)
+			return
 
 func _setup_tilemap():
 	if has_node("DungeonTileMap"):
@@ -137,8 +154,14 @@ func _unlock_exit():
 		if door and door.has_method("open"):
 			door.open()
 	is_cleared = true
-	# Show available exits
+	print("[Room] Exit unlocked! is_cleared=%s, exit_doors=%d" % [is_cleared, all_exit_doors.size()])
+	# Show available exits from door config or route table
 	var exits = _get_available_exits()
+	if exits.is_empty():
+		# Fallback: get routes from GameRoot
+		var game_root = get_parent()
+		if game_root and game_root.has_method("get_available_routes"):
+			exits = game_root.get_available_routes()
 	if exits.size() > 1:
 		EventBus.show_room_message.emit("选择出口: %s" % " / ".join(exits))
 	else:
@@ -229,8 +252,14 @@ func _generate_rewards() -> Array:
 	return rewards
 
 func _on_exit_body_entered(body: Node2D, door: StaticBody2D):
+	if _exit_triggered:
+		print("[Exit] Already triggered, skipping")
+		return
+	print("[Exit] body=%s is_player=%s is_cleared=%s" % [body.name, body.is_in_group("player"), is_cleared])
 	if body.is_in_group("player") and is_cleared:
+		_exit_triggered = true
 		var target = door.get("target_room_type") if door else ""
+		print("[Exit] Triggered! target='%s'" % target)
 		if target and target != "":
 			EventBus.room_exit_selected.emit(target)
 		else:

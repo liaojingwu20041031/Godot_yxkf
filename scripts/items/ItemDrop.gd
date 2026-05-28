@@ -123,8 +123,16 @@ func _apply_item_effect(player: Node):
 		"gold":
 			var amount = item_data.get("amount", 0)
 			GameManager.add_gold(amount)
+			var ft = FloatingText.new()
+			ft.global_position = global_position + Vector2(0, -20)
+			ft.show_text("+%d金币" % amount, Color(1, 0.85, 0))
+			get_tree().current_scene.add_child(ft)
 		"key":
 			GameManager.add_key(1)
+			var ft = FloatingText.new()
+			ft.global_position = global_position + Vector2(0, -20)
+			ft.show_text("+1钥匙", Color(0.3, 0.8, 1))
+			get_tree().current_scene.add_child(ft)
 		"consumable":
 			var heal_amount = item_data.get("heal", 0)
 			if heal_amount > 0 and player.has_method("heal"):
@@ -133,8 +141,6 @@ func _apply_item_effect(player: Node):
 			if shield_amount > 0 and player.has_method("add_shield"):
 				player.add_shield(shield_amount)
 		"equipment":
-			EventBus.item_picked_up.emit(item_data)
-		_:
-			EventBus.item_picked_up.emit(item_data)
+			pass
 
 	EventBus.item_picked_up.emit(item_data)

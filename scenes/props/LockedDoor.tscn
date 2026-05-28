@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/dungeon/interactables/LockedDoor.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/dungeon_crawl/doors/dngn_closed_door.png" id="2"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_detect"]
+size = Vector2(32, 48)
+
+[node name="LockedDoor" type="Node2D"]
+script = ExtResource("1")
+prompt_text = "按 E 使用钥匙开门 (1把)"
+keys_required = 1
+target_room_type = "TREASURE"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2")
+
+[node name="InteractArea" type="Area2D" parent="."]
+collision_layer = 32
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
+shape = SubResource("RectangleShape2D_detect")
+
+[node name="InteractLabel" type="Label" parent="."]
+offset_left = -50.0
+offset_top = -52.0
+offset_right = 50.0
+offset_bottom = -38.0
+theme_override_colors/font_color = Color(1, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 8
+horizontal_alignment = 1
+text = "按 E 使用钥匙"

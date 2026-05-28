@@ -183,6 +183,57 @@ static func build_shop_room(tilemap: TileMapLayer, floor_source: int = 0, wall_s
 	for x in range(12, 15):
 		tilemap.set_cell(Vector2i(x, 6), TileSource.PLATFORM, Vector2i(0, 0))
 
+# Build vertical room - platforms going upward, exit at top
+static func build_vertical_room(tilemap: TileMapLayer, floor_source: int = 0, wall_source: int = 2, platform_source: int = 4):
+	build_standard_room(tilemap, floor_source, wall_source)
+	# Platforms ascending from left to right
+	for x in range(2, 6):
+		tilemap.set_cell(Vector2i(x, 8), platform_source, Vector2i(0, 0))
+	for x in range(8, 12):
+		tilemap.set_cell(Vector2i(x, 6), platform_source, Vector2i(0, 0))
+	for x in range(14, 18):
+		tilemap.set_cell(Vector2i(x, 4), platform_source, Vector2i(0, 0))
+	# Top platform near exit
+	for x in range(16, 19):
+		tilemap.set_cell(Vector2i(x, 2), platform_source, Vector2i(0, 0))
+
+# Build wide room - flanking platforms
+static func build_wide_room(tilemap: TileMapLayer, floor_source: int = 0, wall_source: int = 2, platform_source: int = 4):
+	build_standard_room(tilemap, floor_source, wall_source)
+	# Left flank platform
+	for x in range(1, 5):
+		tilemap.set_cell(Vector2i(x, 5), platform_source, Vector2i(0, 0))
+	# Right flank platform
+	for x in range(15, 19):
+		tilemap.set_cell(Vector2i(x, 5), platform_source, Vector2i(0, 0))
+	# Center obstacle
+	for x in range(9, 11):
+		tilemap.set_cell(Vector2i(x, 8), wall_source, Vector2i(0, 0))
+
+# Build trap room - pits and hazards
+static func build_trap_room(tilemap: TileMapLayer, floor_source: int = 0, wall_source: int = 2):
+	# Floor with gaps
+	for x in range(ROOM_WIDTH):
+		if x < 3 or (x > 5 and x < 9) or (x > 11 and x < 15) or x > 17:
+			tilemap.set_cell(Vector2i(x, FLOOR_ROW_TOP), floor_source, Vector2i(0, 0))
+			tilemap.set_cell(Vector2i(x, FLOOR_ROW_BOT), floor_source, Vector2i(0, 0))
+	# Walls
+	for y in range(ROOM_HEIGHT):
+		tilemap.set_cell(Vector2i(WALL_COL_LEFT, y), wall_source, Vector2i(0, 0))
+		tilemap.set_cell(Vector2i(WALL_COL_RIGHT, y), wall_source, Vector2i(0, 0))
+	# Ceiling
+	for x in range(ROOM_WIDTH):
+		tilemap.set_cell(Vector2i(x, CEILING_ROW), wall_source, Vector2i(0, 0))
+
+# Build locked treasure room - alcove with barrier
+static func build_locked_treasure_room(tilemap: TileMapLayer, floor_source: int = 1, wall_source: int = 3):
+	build_standard_room(tilemap, floor_source, wall_source)
+	# Treasure alcove walls
+	for y in range(3, 9):
+		tilemap.set_cell(Vector2i(14, y), wall_source, Vector2i(0, 0))
+	# Gap in alcove wall for locked door
+	tilemap.set_cell(Vector2i(14, 8), floor_source, Vector2i(0, 0))
+
 # Create a ready-to-use TileMapLayer node
 static func create_room_tilemap(layout: String = "standard", floor_source: int = 0, wall_source: int = 2) -> TileMapLayer:
 	var tilemap = TileMapLayer.new()
@@ -207,6 +258,14 @@ static func create_room_tilemap(layout: String = "standard", floor_source: int =
 			build_rest_room(tilemap, floor_source, wall_source)
 		"shop":
 			build_shop_room(tilemap, floor_source, wall_source)
+		"vertical":
+			build_vertical_room(tilemap, floor_source, wall_source)
+		"wide":
+			build_wide_room(tilemap, floor_source, wall_source)
+		"trap":
+			build_trap_room(tilemap, floor_source, wall_source)
+		"locked_treasure":
+			build_locked_treasure_room(tilemap, floor_source, wall_source)
 		_:
 			build_standard_room(tilemap, floor_source, wall_source)
 	return tilemap
