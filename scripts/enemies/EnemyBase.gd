@@ -145,8 +145,10 @@ func _on_hurt(damage: int, knockback: Vector2, source: Node):
 	current_health -= damage
 	EventBus.enemy_hit.emit(self, damage)
 	# Feedback
-	FeedbackManager.damage_text(global_position + Vector2(0, -20), damage)
-	FeedbackManager.hit_stop(0.03)
+	var fm = get_node_or_null("/root/FeedbackManager")
+	if fm:
+		fm.damage_text(global_position + Vector2(0, -20), damage)
+		fm.hit_stop(0.03)
 	if hit_flash_node and hit_flash_node.has_method("flash"):
 		hit_flash_node.flash()
 	if current_health <= 0:

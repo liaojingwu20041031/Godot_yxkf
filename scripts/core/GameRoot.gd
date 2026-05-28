@@ -53,7 +53,9 @@ func _ready():
 	EventBus.player_hit.connect(_on_player_hit)
 	camera = $Camera2D
 	player = $Player
-	FeedbackManager.setup(camera)
+	var fm = get_node_or_null("/root/FeedbackManager")
+	if fm:
+		fm.setup(camera)
 	_load_start_room()
 
 func _pick_room_scene(room_type: String) -> String:
@@ -147,7 +149,9 @@ func _on_room_exit_selected(target_room_type: String):
 	_load_room_by_type(target_room_type)
 
 func _on_player_hit(_damage: int, _source: Node):
-	FeedbackManager.screen_shake(3.0, 0.12)
+	var fm = get_node_or_null("/root/FeedbackManager")
+	if fm:
+		fm.screen_shake(3.0, 0.12)
 
 func _on_game_over(victory: bool):
 	if victory:

@@ -54,7 +54,7 @@ func _on_body_exited(body: Node2D):
 func _unhandled_input(event):
 	if player_nearby and not is_opened and event.is_action_pressed("interact"):
 		if chest_type == ChestType.KEY and GameManager.keys <= 0:
-			FeedbackManager.message_text(global_position, "需要钥匙!", Color(1, 0.3, 0.3))
+			_show_msg("需要钥匙!", Color(1, 0.3, 0.3))
 			get_viewport().set_input_as_handled()
 			return
 		get_viewport().set_input_as_handled()
@@ -67,15 +67,12 @@ func open():
 	if label:
 		label.visible = false
 
-	# Consume key for key chest
 	if chest_type == ChestType.KEY:
 		GameManager.add_key(-1)
 
-	# Swap to open texture with flash
 	if open_texture and sprite:
 		sprite.texture = open_texture
-	FeedbackManager.flash_node(sprite, 0.3)
-
+	_flash(sprite)
 	_spawn_rewards()
 	opened.emit()
 
@@ -91,12 +88,9 @@ func _spawn_rewards():
 			_spawn_key_rewards()
 
 func _spawn_normal_rewards():
-	# Gold + small potion
 	var gold = randi_range(15, 40)
 	GameManager.add_gold(gold)
-	FeedbackManager.gold_text(global_position + Vector2(0, -20), gold)
-
-	# 50% chance for potion
+	_show_gold(gold)
 	if randf() < 0.5:
 		_spawn_item_drop({
 			"type": "consumable",
@@ -106,30 +100,25 @@ func _spawn_normal_rewards():
 		})
 
 func _spawn_equipment_rewards():
-	# Guaranteed equipment
 	var loot_manager = get_node_or_null("/root/LootManager")
 	if loot_manager:
 		var drops = loot_manager.roll_chest_loot("rare")
 		for drop in drops:
 			_spawn_item_drop(drop)
 	else:
-		# Fallback
 		_spawn_item_drop({
 			"type": "equipment",
 			"name": "随机装备",
 			"rarity": "rare",
 			"texture": AssetCatalog.weapons["long_sword"],
 		})
-	FeedbackManager.message_text(global_position + Vector2(0, -40), "发现装备!", Color(0.3, 0.8, 1))
+	_show_msg("发现装备!", Color(0.3, 0.8, 1))
 
 func _spawn_cursed_rewards():
-	# Lose HP, gain rare item
 	var player = get_tree().get_first_node_in_group("player")
 	if player and player.has_method("take_damage"):
 		player.take_damage(20, self)
-	FeedbackManager.message_text(global_position + Vector2(0, -40), "诅咒生效! -20 HP", Color(0.8, 0.2, 0.8))
-
-	# Rare equipment
+	_show_msg("诅咒生效! -20 HP", Color(0.8, 0.2, 0.8))
 	_spawn_item_drop({
 		"type": "equipment",
 		"name": "诅咒遗物",
@@ -138,12 +127,9 @@ func _spawn_cursed_rewards():
 	})
 
 func _spawn_key_rewards():
-	# High value loot
 	var gold = randi_range(50, 100)
 	GameManager.add_gold(gold)
-	FeedbackManager.gold_text(global_position + Vector2(0, -20), gold)
-
-	# Guaranteed equipment
+	_show_gold(gold)
 	var loot_manager = get_node_or_null("/root/LootManager")
 	if loot_manager:
 		var drops = loot_manager.roll_chest_loot("rare")
@@ -155,5 +141,20 @@ func _spawn_item_drop(data: Dictionary):
 	var drop_node = Area2D.new()
 	drop_node.set_script(drop_script)
 	get_parent().add_child(drop_node)
-	var tex = data.get("texture", "")
 	drop_node.setup(data, null, global_position + Vector2(randf_range(-10, 10), -16))
+
+# Helper to safely use FeedbackManager
+func _show_gold(amount: int):
+	var fm = get_node_or_null("/root/FeedbackManager")
+	if fm:
+		fm.gold_text(global_position + Vector2(0, -20), amount)
+
+func _show_msg(text: String, color: Color):
+	var fm = get_node_or_null("/root/FeedbackManager")
+	if fm:
+		fm.message_text(global_position + Vector2(0, -40), text, color)
+
+func _flash(node: Node):
+	var fm = get_node_or_null("/root/FeedbackManager")
+	if fm:
+		fm.flash_node(node, 0.3)
