@@ -92,9 +92,14 @@ func _load_room(index: int):
 	# Reset player velocity
 	player.velocity = Vector2.ZERO
 
-	# Update camera
+	# Update camera with room bounds
 	if camera:
 		camera.global_position = player.global_position
+		# Set camera limits to room bounds (20x12 tiles at 32px)
+		camera.limit_left = 0
+		camera.limit_top = 0
+		camera.limit_right = 640
+		camera.limit_bottom = 384
 
 	# Update GameManager
 	GameManager.current_room_index = index

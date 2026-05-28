@@ -25,9 +25,9 @@ func _physics_process(delta):
 
 func _idle_state(delta):
 	velocity = velocity.lerp(Vector2.ZERO, 5 * delta)
-	# Continuous hover bob
-	var hover = sin(hover_time * 3.0) * 15.0
-	global_position.y = home_position.y + hover - fly_height
+	# Continuous hover bob (no fly_height offset - stay near spawn point)
+	var hover = sin(hover_time * 3.0) * 10.0
+	global_position.y = home_position.y + hover
 
 func _chase_state(delta):
 	if not player:
@@ -37,7 +37,7 @@ func _chase_state(delta):
 	_face_player()
 
 	if not is_diving:
-		var target = player.global_position + Vector2(0, -fly_height * 0.6)
+		var target = player.global_position + Vector2(0, -48)
 		var dir = (target - global_position).normalized()
 		velocity = dir * move_speed
 		# Add hover bob during chase

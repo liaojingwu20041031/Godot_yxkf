@@ -123,6 +123,10 @@ func _open_entrance():
 			entrance_door.open()
 
 func _spawn_enemies():
+	# Reset counts to prevent stale data
+	enemies_alive = 0
+	enemies_total = 0
+	tracked_enemies.clear()
 	# Count pre-placed enemies in EnemyContainer
 	if enemy_container:
 		for child in enemy_container.get_children():
@@ -141,6 +145,13 @@ func _spawn_enemies():
 	# Show initial objective
 	enemies_total = enemies_alive
 	EventBus.show_room_message.emit("击败所有敌人 0/%d" % enemies_total)
+	# Debug: print enemy info
+	for enemy in tracked_enemies:
+		print("[Room] Enemy: %s pos=%s group=%s" % [enemy.name, enemy.global_position, enemy.is_in_group("enemies")])
+	# Safety: if no enemies in combat room, unlock immediately
+	if enemies_total <= 0 and (room_type == RoomType.COMBAT or room_type == RoomType.ELITE):
+		push_warning("Combat room has no enemies, unlocking exit")
+		_unlock_exit()
 
 func _spawn_treasure():
 	# Find chest in PropContainer and connect
