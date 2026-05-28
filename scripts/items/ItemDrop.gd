@@ -20,7 +20,7 @@ func _ready():
 	_glow = get_node_or_null("GlowLight")
 
 func setup(data: Dictionary, texture: Texture2D = null, start_pos: Vector2 = Vector2.ZERO):
-	item_data = data
+	item_data = _normalize_item_data(data)
 	global_position = start_pos
 
 	if not _sprite:
@@ -32,7 +32,7 @@ func setup(data: Dictionary, texture: Texture2D = null, start_pos: Vector2 = Vec
 		if texture:
 			_sprite.texture = texture
 		else:
-			var tex_path = data.get("texture", "")
+			var tex_path = item_data.get("texture", "")
 			if tex_path != "":
 				_sprite.texture = load(tex_path)
 
@@ -122,6 +122,9 @@ func _apply_item_effect(player: Node):
 	match item_type:
 		"gold":
 			var amount = item_data.get("amount", 0)
+			var gold_mult = player.get_meta("gold_multiplier", 1.0)
+			gold_mult += player.get_meta("equipment_gold_bonus", 0.0)
+			amount = int(round(amount * gold_mult))
 			GameManager.add_gold(amount)
 			var ft = FloatingText.new()
 			ft.global_position = global_position + Vector2(0, -20)
@@ -141,6 +144,67 @@ func _apply_item_effect(player: Node):
 			if shield_amount > 0 and player.has_method("add_shield"):
 				player.add_shield(shield_amount)
 		"equipment":
-			pass
+			_apply_equipment_effect(player)
 
 	EventBus.item_picked_up.emit(item_data)
+
+func _normalize_item_data(data: Dictionary) -> Dictionary:
+	var normalized = data.duplicate(true)
+	var nested = normalized.get("data", {})
+	if nested is Dictionary:
+		for key in nested:
+			var current = normalized.get(key, null)
+			if current == null or (current is String and current == ""):
+				normalized[key] = nested[key]
+	if normalized.get("type", "") == "equipment" and not normalized.has("stats"):
+		normalized["stats"] = _collect_equipment_stats(normalized)
+	return normalized
+
+func _collect_equipment_stats(data: Dictionary) -> Dictionary:
+	var stats = {}
+	for stat in ["attack", "attack_power", "defense", "max_health", "shield", "gold_bonus", "lifesteal", "attack_speed", "speed"]:
+		if data.has(stat):
+			stats[stat] = data[stat]
+	return stats
+
+func _apply_equipment_effect(player: Node):
+	var stats = item_data.get("stats", {})
+	if not (stats is Dictionary):
+		stats = _collect_equipment_stats(item_data)
+
+	for stat in stats:
+		_apply_equipment_stat(player, stat, stats[stat])
+
+	var item_name = item_data.get("name", "装备")
+	var ft = FloatingText.new()
+	ft.global_position = global_position + Vector2(0, -20)
+	ft.show_text("装备: %s" % item_name, Color(0.6, 0.9, 1.0))
+	get_tree().current_scene.add_child(ft)
+
+func _apply_equipment_stat(player: Node, stat: String, value):
+	match stat:
+		"attack", "attack_power":
+			player.attack_power += int(value)
+		"defense":
+			player.defense += int(value)
+		"max_health":
+			player.max_health += int(value)
+			player.current_health = min(player.current_health + int(value), player.max_health)
+			EventBus.player_health_changed.emit(player.current_health, player.max_health)
+		"shield":
+			if player.has_method("add_shield"):
+				player.add_shield(int(value))
+		"gold_bonus":
+			var current_gold_bonus = player.get_meta("equipment_gold_bonus", 0.0)
+			player.set_meta("equipment_gold_bonus", current_gold_bonus + float(value))
+		"lifesteal":
+			var current_lifesteal = player.get_meta("lifesteal", 0.0)
+			player.set_meta("lifesteal", current_lifesteal + float(value))
+			var kill_heal = player.get_meta("on_kill_health", 0)
+			player.set_meta("on_kill_health", kill_heal + max(1, int(round(float(value) * 20.0))))
+		"attack_speed":
+			var attack_speed_mult = player.get_meta("attack_speed_multiplier", 1.0)
+			player.set_meta("attack_speed_multiplier", attack_speed_mult * (1.0 + float(value)))
+		"speed":
+			var speed_mult = player.get_meta("speed_multiplier", 1.0)
+			player.set_meta("speed_multiplier", speed_mult * (1.0 + float(value) / 100.0))
