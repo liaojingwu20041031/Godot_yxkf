@@ -57,7 +57,7 @@ shape = SubResource("door_shape")
 position = Vector2(320, 180)
 
 [node name="Player" parent="." instance=ExtResource("3")]
-position = Vector2(160, 290)
+position = Vector2(160, 306)
 
 [node name="Torch1" parent="PropContainer" instance=ExtResource("4")]
 position = Vector2(48, 288)
@@ -66,7 +66,7 @@ position = Vector2(48, 288)
 position = Vector2(592, 288)
 
 [node name="Campfire" type="Area2D" parent="."]
-position = Vector2(320, 298)
+position = Vector2(320, 306)
 collision_layer = 0
 collision_mask = 1
 script = ExtResource("5")

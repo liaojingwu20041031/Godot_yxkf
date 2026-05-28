@@ -56,7 +56,7 @@ shape = SubResource("door_shape")
 position = Vector2(320, 180)
 
 [node name="Player" parent="." instance=ExtResource("3")]
-position = Vector2(100, 290)
+position = Vector2(100, 306)
 
 [node name="Torch1" parent="PropContainer" instance=ExtResource("7")]
 position = Vector2(48, 288)
@@ -76,16 +76,16 @@ collision_layer = 0
 collision_mask = 1
 script = ExtResource("8")
 damage = 20
-safe_position = Vector2(200, 290)
+safe_position = Vector2(200, 306)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PitHazard"]
 shape = SubResource("pit_shape")
 
 [node name="Skeleton1" parent="EnemyContainer" instance=ExtResource("4")]
-position = Vector2(200, 298)
+position = Vector2(200, 308)
 
 [node name="Skeleton2" parent="EnemyContainer" instance=ExtResource("4")]
-position = Vector2(440, 298)
+position = Vector2(440, 308)
 
 [node name="Bat1" parent="EnemyContainer" instance=ExtResource("5")]
 position = Vector2(320, 200)

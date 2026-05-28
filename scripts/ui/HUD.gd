@@ -22,6 +22,7 @@ func _ready():
 	EventBus.gold_changed.connect(_on_gold_changed)
 	EventBus.key_changed.connect(_on_key_changed)
 	EventBus.room_entered.connect(_on_room_entered)
+	EventBus.show_room_message.connect(_on_room_message)
 	_apply_theme()
 	_update_all()
 
@@ -87,7 +88,24 @@ func _on_key_changed(amount: int):
 
 func _on_room_entered(room_type: String):
 	if room_label:
-		room_label.text = room_type
+		var objectives = {
+			"START": "→ 走到出口",
+			"COMBAT": "击败所有敌人",
+			"ELITE": "击败所有敌人",
+			"TREASURE": "打开宝箱",
+			"SHOP": "与商人交易",
+			"REST": "休息恢复",
+			"BOSS": "击败 Boss",
+		}
+		room_label.text = objectives.get(room_type, room_type)
+
+func _on_room_message(text: String):
+	if room_label:
+		room_label.text = text
+		# Auto-clear after 3 seconds
+		await get_tree().create_timer(3.0).timeout
+		if room_label and room_label.text == text:
+			room_label.text = ""
 
 func show_boss_bar(boss_name: String, health: int):
 	if boss_bar:

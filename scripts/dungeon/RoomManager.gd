@@ -105,12 +105,16 @@ func _close_entrance():
 		if entrance_door.has_method("close"):
 			entrance_door.close()
 
-func _open_exit():
-	if exit_door:
-		if exit_door.has_method("open"):
-			exit_door.open()
+# Only unlock the exit door - does NOT complete the room
+func _unlock_exit():
+	if exit_door and exit_door.has_method("open"):
+		exit_door.open()
 	is_cleared = true
-	room_cleared.emit()
+	EventBus.show_room_message.emit("出口已开启 - 走到门口进入下一房间")
+
+# Actually complete the room and trigger transition
+func _complete_room():
+	EventBus.room_cleared.emit()
 
 func _open_entrance():
 	if entrance_door:
@@ -143,9 +147,8 @@ func _spawn_treasure():
 				prop.opened.connect(_on_treasure_opened)
 
 func _spawn_shop():
-	# Shop room - no enemies, mark as cleared immediately so exit opens
-	is_cleared = true
-	_open_exit()
+	# Shop room - no enemies, exit already open
+	pass
 
 func _spawn_rest():
 	# Rest room - heal player
@@ -155,13 +158,10 @@ func _spawn_rest():
 			player.heal(50)
 		elif player.get("current_health") != null:
 			player.current_health = min(player.current_health + 50, player.max_health)
-	# Rest room is safe - mark as cleared so exit opens
-	is_cleared = true
-	_open_exit()
 
 func _on_treasure_opened():
-	# Treasure collected - open exit
-	_open_exit()
+	# Treasure collected - unlock exit (player must walk to door)
+	_unlock_exit()
 
 func _on_enemy_died(enemy: Node):
 	if enemy in tracked_enemies:
@@ -170,11 +170,13 @@ func _on_enemy_died(enemy: Node):
 		if enemies_alive <= 0:
 			all_enemies_dead.emit()
 			if room_type == RoomType.BOSS:
-				# Boss defeated - victory!
+				# Boss defeated - unlock exit, then victory after delay
+				_unlock_exit()
 				await get_tree().create_timer(2.0).timeout
 				EventBus.game_over.emit(true)
 			else:
-				_open_exit()
+				# Unlock exit - player must walk to door
+				_unlock_exit()
 				if room_type == RoomType.COMBAT or room_type == RoomType.ELITE:
 					_show_reward()
 
@@ -189,6 +191,7 @@ func _generate_rewards() -> Array:
 		rewards = upgrade_manager.get_random_upgrades(3)
 	return rewards
 
+# Player walks into exit door area - only then complete the room
 func _on_exit_body_entered(body: Node2D):
 	if body.is_in_group("player") and is_cleared:
-		EventBus.room_cleared.emit()
+		_complete_room()

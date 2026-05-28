@@ -22,3 +22,4 @@ signal show_reward_panel(rewards: Array)
 signal hide_reward_panel
 signal show_tooltip(item_data: Dictionary)
 signal hide_tooltip
+signal show_room_message(text: String)

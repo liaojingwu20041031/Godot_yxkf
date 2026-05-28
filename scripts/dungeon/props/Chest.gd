@@ -48,15 +48,20 @@ func open():
 	is_opened = true
 	if label:
 		label.visible = false
+	# Swap to open texture
 	if open_texture and sprite:
 		sprite.texture = open_texture
 	# Flash effect
 	if sprite:
 		var tween = create_tween()
-		sprite.modulate = Color(2, 2, 2, 1)
-		tween.tween_property(sprite, "modulate", Color(1, 1, 1, 1), 0.4)
-	# Spawn rewards
+		sprite.modulate = Color(3, 3, 1, 1)
+		tween.tween_property(sprite, "modulate", Color(1, 1, 1, 1), 0.5)
+	# Spawn rewards with visual feedback
 	_spawn_rewards()
+	# Show floating text
+	_show_floating_text("+%d Gold" % gold_amount)
+	# Show exit opened message
+	_show_floating_text("出口已开启", Vector2(0, -40))
 	opened.emit()
 
 func _spawn_rewards():
@@ -68,3 +73,19 @@ func _spawn_rewards():
 		var item = item_scene.instantiate()
 		item.global_position = global_position + Vector2(0, -16)
 		get_tree().current_scene.add_child(item)
+
+func _show_floating_text(text: String, offset: Vector2 = Vector2(0, -20)):
+	var floating_label = Label.new()
+	floating_label.text = text
+	floating_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	floating_label.add_theme_font_size_override("font_size", 10)
+	floating_label.add_theme_color_override("font_color", Color(1, 0.9, 0.3, 1))
+	floating_label.position = global_position + offset + Vector2(-40, 0)
+	floating_label.size = Vector2(80, 16)
+	get_tree().current_scene.add_child(floating_label)
+	# Animate: float up and fade out
+	var tween = floating_label.create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(floating_label, "position:y", floating_label.position.y - 30, 1.5)
+	tween.tween_property(floating_label, "modulate:a", 0.0, 1.5).set_delay(0.5)
+	tween.chain().tween_callback(floating_label.queue_free)

@@ -52,7 +52,7 @@ shape = SubResource("door_shape")
 position = Vector2(320, 180)
 
 [node name="Player" parent="." instance=ExtResource("3")]
-position = Vector2(100, 290)
+position = Vector2(100, 306)
 
 [node name="Torch1" parent="PropContainer" instance=ExtResource("6")]
 position = Vector2(48, 288)
@@ -67,7 +67,7 @@ position = Vector2(320, 288)
 position = Vector2(280, 308)
 
 [node name="Skeleton1" parent="EnemyContainer" instance=ExtResource("4")]
-position = Vector2(320, 298)
+position = Vector2(320, 308)
 
 [node name="Bat1" parent="EnemyContainer" instance=ExtResource("5")]
 position = Vector2(200, 180)
