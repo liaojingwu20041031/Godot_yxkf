@@ -1,3 +1,4 @@
+class_name FloatingText
 extends Node2D
 
 var text: String = ""
