@@ -35,6 +35,7 @@ func _ready():
 	EventBus.room_cleared.connect(_on_room_cleared)
 	EventBus.game_over.connect(_on_game_over)
 	camera = $Camera2D
+	player = $Player
 	_load_room(0)
 
 func _pick_room_scene(room_type: String) -> String:
@@ -60,11 +61,10 @@ func _load_room(index: int):
 
 	room_index = index
 
-	# Remove old room
+	# Remove old room (but NOT the player - player persists)
 	if current_room:
 		current_room.queue_free()
 		current_room = null
-		player = null
 
 	# Pick random room from pool
 	var room_type = run_sequence[index]
@@ -80,25 +80,25 @@ func _load_room(index: int):
 
 	current_room = scene.instantiate()
 	add_child(current_room)
+	move_child(player, get_child_count() - 1)  # Keep player on top
 
-	# Find player in room
-	_find_player()
+	# Move player to spawn point
+	var spawn = current_room.get_node_or_null("PlayerSpawnPoint")
+	if spawn:
+		player.global_position = spawn.global_position
+	else:
+		player.global_position = Vector2(160, 306)
+
+	# Reset player velocity
+	player.velocity = Vector2.ZERO
+
+	# Update camera
+	if camera:
+		camera.global_position = player.global_position
 
 	# Update GameManager
 	GameManager.current_room_index = index
 	EventBus.room_entered.emit(room_type)
-
-func _find_player():
-	# Find existing player in the room
-	for child in current_room.get_children():
-		if child.is_in_group("player"):
-			player = child
-			break
-	if not player:
-		# Search deeper
-		player = current_room.get_node_or_null("Player")
-	if player and camera:
-		camera.global_position = player.global_position
 
 func _process(_delta):
 	# Camera follows player

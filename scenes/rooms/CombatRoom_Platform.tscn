@@ -1,8 +1,7 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/dungeon/RoomManager.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/dungeon/Door.gd" id="2"]
-[ext_resource type="PackedScene" uid="uid://player_scene" path="res://scenes/player/Player.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://skeleton_scene" path="res://scenes/enemies/Skeleton.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://bat_scene" path="res://scenes/enemies/Bat.tscn" id="5"]
 [ext_resource type="PackedScene" path="res://scenes/props/Torch.tscn" id="6"]
@@ -51,7 +50,7 @@ shape = SubResource("door_shape")
 [node name="RewardPoint" type="Marker2D" parent="."]
 position = Vector2(320, 180)
 
-[node name="Player" parent="." instance=ExtResource("3")]
+[node name="PlayerSpawnPoint" type="Marker2D" parent="."]
 position = Vector2(100, 306)
 
 [node name="Torch1" parent="PropContainer" instance=ExtResource("6")]
@@ -60,17 +59,11 @@ position = Vector2(48, 288)
 [node name="Torch2" parent="PropContainer" instance=ExtResource("6")]
 position = Vector2(592, 288)
 
-[node name="Torch3" parent="PropContainer" instance=ExtResource("6")]
-position = Vector2(320, 288)
-
-[node name="Barrel1" parent="PropContainer" instance=ExtResource("7")]
-position = Vector2(280, 308)
-
-[node name="Skeleton1" parent="EnemyContainer" instance=ExtResource("4")]
+[node name="SkeletonGround" parent="EnemyContainer" instance=ExtResource("4")]
 position = Vector2(320, 308)
 
-[node name="Bat1" parent="EnemyContainer" instance=ExtResource("5")]
-position = Vector2(200, 180)
+[node name="BatLeft" parent="EnemyContainer" instance=ExtResource("5")]
+position = Vector2(160, 180)
 
-[node name="Bat2" parent="EnemyContainer" instance=ExtResource("5")]
-position = Vector2(450, 180)
+[node name="BatRight" parent="EnemyContainer" instance=ExtResource("5")]
+position = Vector2(480, 180)

@@ -95,6 +95,7 @@ func _ready():
 	add_to_group("player")
 	_setup_animations()
 	EventBus.player_health_changed.emit(current_health, max_health)
+	EventBus.enemy_died.connect(_on_enemy_died)
 
 func _setup_animations():
 	var frames = SpriteFrames.new()
@@ -197,10 +198,11 @@ func _handle_input(delta):
 	is_crouching = Input.is_action_pressed("crouch") and is_on_floor()
 
 	# Movement
+	var speed_mult = get_meta("speed_multiplier", 1.0)
 	var input_dir = Input.get_axis("move_left", "move_right")
 	if input_dir != 0 and not is_crouching:
 		var accel = GROUND_ACCEL if is_on_floor() else AIR_ACCEL
-		velocity.x = move_toward(velocity.x, input_dir * MOVE_SPEED, accel * delta)
+		velocity.x = move_toward(velocity.x, input_dir * MOVE_SPEED * speed_mult, accel * delta)
 		if input_dir > 0 and not facing_right:
 			_flip()
 		elif input_dir < 0 and facing_right:
@@ -486,6 +488,15 @@ func take_damage(damage: int, source: Node = null):
 	current_health -= actual_damage
 	EventBus.player_health_changed.emit(current_health, max_health)
 	EventBus.player_hit.emit(actual_damage, source)
+	# Show damage floating text
+	if actual_damage > 0:
+		var ft_script = load("res://scripts/ui/FloatingText.gd")
+		var ft = ft_script.new()
+		ft.text = str(actual_damage)
+		ft.color = Color(1, 0.2, 0.2, 1)
+		ft.font_size = 11
+		ft.global_position = global_position + Vector2(0, -20)
+		get_parent().add_child(ft)
 
 	if current_health <= 0:
 		_die()
@@ -516,10 +527,24 @@ func _die():
 func heal(amount: int):
 	current_health = min(current_health + amount, max_health)
 	EventBus.player_health_changed.emit(current_health, max_health)
+	# Show healing floating text
+	var ft_script = load("res://scripts/ui/FloatingText.gd")
+	var ft = ft_script.new()
+	ft.text = "+%d HP" % amount
+	ft.color = Color(0.3, 1, 0.3, 1)
+	ft.font_size = 11
+	ft.global_position = global_position + Vector2(0, -20)
+	get_parent().add_child(ft)
 
 func add_shield(amount: int):
 	shield = min(shield + amount, max_health)
 	EventBus.player_shield_changed.emit(shield, max_health)
+
+func _on_enemy_died(_enemy: Node):
+	# Lifesteal: heal on kill
+	var kill_heal = get_meta("on_kill_health", 0)
+	if kill_heal > 0:
+		heal(kill_heal)
 
 func get_state() -> State:
 	return current_state

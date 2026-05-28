@@ -39,6 +39,14 @@ func _heal_player():
 	var player = get_tree().get_first_node_in_group("player")
 	if player and player.has_method("heal"):
 		player.heal(heal_amount)
+	# Show healing floating text
+	var ft_script = load("res://scripts/ui/FloatingText.gd")
+	var ft = ft_script.new()
+	ft.text = "+%d HP" % heal_amount
+	ft.color = Color(0.3, 1, 0.3, 1)
+	ft.font_size = 11
+	ft.global_position = global_position + Vector2(0, -20)
+	get_tree().current_scene.add_child(ft)
 	# Visual feedback - bright flash
 	if sprite:
 		var tween = create_tween()

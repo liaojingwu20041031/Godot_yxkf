@@ -12,6 +12,7 @@ enum RoomType { START, COMBAT, ELITE, TREASURE, SHOP, REST, SHRINE, BOSS }
 @export var spawn_points: Array[Vector2] = []
 
 var enemies_alive: int = 0
+var enemies_total: int = 0
 var is_cleared: bool = false
 var is_active: bool = false
 var tracked_enemies: Array[Node] = []
@@ -137,6 +138,9 @@ func _spawn_enemies():
 		enemy_container.add_child(enemy)
 		enemies_alive += 1
 		tracked_enemies.append(enemy)
+	# Show initial objective
+	enemies_total = enemies_alive
+	EventBus.show_room_message.emit("击败所有敌人 0/%d" % enemies_total)
 
 func _spawn_treasure():
 	# Find chest in PropContainer and connect
@@ -167,6 +171,7 @@ func _on_enemy_died(enemy: Node):
 	if enemy in tracked_enemies:
 		tracked_enemies.erase(enemy)
 		enemies_alive -= 1
+		var killed = enemies_total - enemies_alive
 		if enemies_alive <= 0:
 			all_enemies_dead.emit()
 			if room_type == RoomType.BOSS:
@@ -179,6 +184,9 @@ func _on_enemy_died(enemy: Node):
 				_unlock_exit()
 				if room_type == RoomType.COMBAT or room_type == RoomType.ELITE:
 					_show_reward()
+		else:
+			# Show progress
+			EventBus.show_room_message.emit("击败所有敌人 %d/%d" % [killed, enemies_total])
 
 func _show_reward():
 	var rewards = _generate_rewards()
