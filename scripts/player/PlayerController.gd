@@ -490,12 +490,11 @@ func take_damage(damage: int, source: Node = null):
 	EventBus.player_hit.emit(actual_damage, source)
 	# Show damage floating text
 	if actual_damage > 0:
-		var ft_script = load("res://scripts/ui/FloatingText.gd")
-		var ft = ft_script.new()
+		var ft = FloatingText.new()
 		ft.text = str(actual_damage)
 		ft.color = Color(1, 0.2, 0.2, 1)
-		ft.font_size = 11
-		ft.global_position = global_position + Vector2(0, -20)
+		ft.font_size = 14
+		ft.global_position = global_position + Vector2(0, -30)
 		get_parent().add_child(ft)
 
 	if current_health <= 0:
@@ -528,12 +527,11 @@ func heal(amount: int):
 	current_health = min(current_health + amount, max_health)
 	EventBus.player_health_changed.emit(current_health, max_health)
 	# Show healing floating text
-	var ft_script = load("res://scripts/ui/FloatingText.gd")
-	var ft = ft_script.new()
+	var ft = FloatingText.new()
 	ft.text = "+%d HP" % amount
 	ft.color = Color(0.3, 1, 0.3, 1)
-	ft.font_size = 11
-	ft.global_position = global_position + Vector2(0, -20)
+	ft.font_size = 14
+	ft.global_position = global_position + Vector2(0, -30)
 	get_parent().add_child(ft)
 
 func add_shield(amount: int):

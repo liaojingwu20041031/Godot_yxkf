@@ -43,12 +43,11 @@ func _apply_element_effects(area: Area2D):
 			if area.has_method("take_damage"):
 				area.take_damage(fire_damage, Vector2.ZERO, owner_node)
 			# Show fire floating text
-			var ft_script = load("res://scripts/ui/FloatingText.gd")
-			var ft = ft_script.new()
-			ft.text = "+%d🔥" % fire_damage
+			var ft = FloatingText.new()
+			ft.text = "+%d Fire" % fire_damage
 			ft.color = Color(1, 0.4, 0.1, 1)
-			ft.font_size = 9
-			ft.global_position = area.global_position + Vector2(randf_range(-10, 10), -30)
+			ft.font_size = 12
+			ft.global_position = area.global_position + Vector2(randf_range(-10, 10), -35)
 			area.get_parent().add_child(ft)
 
 func set_damage(value: int):

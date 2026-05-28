@@ -145,12 +145,11 @@ func _on_hurt(damage: int, knockback: Vector2, source: Node):
 	current_health -= damage
 	EventBus.enemy_hit.emit(self, damage)
 	# Show damage number
-	var ft_script = load("res://scripts/ui/FloatingText.gd")
-	var ft = ft_script.new()
+	var ft = FloatingText.new()
 	ft.text = str(damage)
 	ft.color = Color(1, 0.3, 0.3, 1)
-	ft.font_size = 11
-	ft.global_position = global_position + Vector2(0, -20)
+	ft.font_size = 14
+	ft.global_position = global_position + Vector2(0, -30)
 	get_parent().add_child(ft)
 	if hit_flash_node and hit_flash_node.has_method("flash"):
 		hit_flash_node.flash()

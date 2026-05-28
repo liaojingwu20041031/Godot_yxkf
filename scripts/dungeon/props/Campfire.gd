@@ -40,11 +40,10 @@ func _heal_player():
 	if player and player.has_method("heal"):
 		player.heal(heal_amount)
 	# Show healing floating text
-	var ft_script = load("res://scripts/ui/FloatingText.gd")
-	var ft = ft_script.new()
+	var ft = FloatingText.new()
 	ft.text = "+%d HP" % heal_amount
 	ft.color = Color(0.3, 1, 0.3, 1)
-	ft.font_size = 11
+	ft.font_size = 14
 	ft.global_position = global_position + Vector2(0, -20)
 	get_tree().current_scene.add_child(ft)
 	# Visual feedback - bright flash

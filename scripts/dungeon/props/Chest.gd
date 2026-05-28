@@ -58,19 +58,18 @@ func open():
 	# Spawn rewards
 	_spawn_rewards()
 	# Floating text: gold gained
-	var ft_script = load("res://scripts/ui/FloatingText.gd")
-	var ft = ft_script.new()
+	var ft = FloatingText.new()
 	ft.text = "+%d Gold" % gold_amount
 	ft.color = Color(1, 0.9, 0.3, 1)
-	ft.font_size = 11
+	ft.font_size = 16
 	ft.global_position = global_position + Vector2(0, -20)
 	get_tree().current_scene.add_child(ft)
 	# Floating text: exit opened
-	var ft2 = ft_script.new()
+	var ft2 = FloatingText.new()
 	ft2.text = "出口已开启"
 	ft2.color = Color(0.5, 1, 0.5, 1)
-	ft2.font_size = 10
-	ft2.global_position = global_position + Vector2(0, -40)
+	ft2.font_size = 14
+	ft2.global_position = global_position + Vector2(0, -45)
 	get_tree().current_scene.add_child(ft2)
 	opened.emit()
 
