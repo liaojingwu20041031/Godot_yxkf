@@ -4,7 +4,7 @@ var current_room: Node2D = null
 var player: CharacterBody2D = null
 var camera: Camera2D = null
 var run_depth: int = 0
-var max_depth: int = 8
+var max_depth: int = 15
 
 # Room pool: type -> array of scene paths
 var room_pools: Dictionary = {
@@ -15,12 +15,15 @@ var room_pools: Dictionary = {
 		"res://scenes/rooms/CombatRoom_Pit.tscn",
 		"res://scenes/rooms/CombatRoom_Vertical.tscn",
 		"res://scenes/rooms/CombatRoom_Wide.tscn",
+		"res://scenes/rooms/CombatRoom_Mage.tscn",
 		"res://scenes/rooms/TrapRoom.tscn",
 	],
 	"ELITE": [
 		"res://scenes/rooms/CombatRoom_Platform.tscn",
 		"res://scenes/rooms/CombatRoom_Pit.tscn",
 		"res://scenes/rooms/CombatRoom_Vertical.tscn",
+		"res://scenes/rooms/CombatRoom_Wide.tscn",
+		"res://scenes/rooms/CombatRoom_Guard.tscn",
 	],
 	"TREASURE": [
 		"res://scenes/rooms/TreasureRoom.tscn",
@@ -37,11 +40,18 @@ var route_table: Dictionary = {
 	0: ["START"],
 	1: ["COMBAT", "TREASURE"],
 	2: ["COMBAT", "SHRINE"],
-	3: ["ELITE", "SHOP"],
-	4: ["REST", "TREASURE"],
-	5: ["COMBAT", "ELITE"],
-	6: ["REST"],
-	7: ["BOSS"],
+	3: ["COMBAT", "ELITE", "SHOP"],
+	4: ["TREASURE", "REST"],
+	5: ["COMBAT", "ELITE", "SHRINE"],
+	6: ["COMBAT", "SHOP"],
+	7: ["ELITE", "TREASURE"],
+	8: ["REST", "COMBAT"],
+	9: ["COMBAT", "SHRINE", "TREASURE"],
+	10: ["ELITE", "SHOP"],
+	11: ["COMBAT", "REST"],
+	12: ["ELITE", "TREASURE"],
+	13: ["REST", "SHRINE"],
+	14: ["BOSS"],
 }
 
 var _last_picked: Dictionary = {}
@@ -103,6 +113,8 @@ func _load_room_by_type(room_type: String):
 		return
 
 	current_room = scene.instantiate()
+	if current_room.has_method("configure_run"):
+		current_room.configure_run(run_depth, get_available_routes())
 	add_child(current_room)
 	move_child(player, get_child_count() - 1)
 

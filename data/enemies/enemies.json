@@ -1,79 +1,79 @@
 {
   "enemies": [
-    {
-      "id": "skeleton",
-      "name": "骷髅兵",
-      "health": 35,
-      "attack": 8,
-      "speed": 70,
-      "type": "melee",
-      "description": "基础教学敌人，攻击慢，适合练习翻滚。",
-      "drops": {"gold": [5, 15], "item_chance": 0.2}
-    },
-    {
-      "id": "spider",
-      "name": "毒蜘蛛",
-      "health": 22,
-      "attack": 5,
-      "speed": 115,
-      "type": "melee",
-      "description": "快速接近，攻击附加中毒。",
-      "status_effects": [{"type": "poison", "damage": 1, "duration": 5}],
-      "drops": {"gold": [3, 10], "item_chance": 0.15}
-    },
-    {
-      "id": "fire_mage",
-      "name": "火焰法师",
-      "health": 28,
-      "attack": 10,
-      "speed": 50,
-      "type": "ranged",
-      "description": "远程火球攻击，保持距离。",
-      "drops": {"gold": [8, 18], "item_chance": 0.25}
-    },
-    {
-      "id": "shield_guard",
-      "name": "盾牌守卫",
-      "health": 60,
-      "attack": 12,
-      "speed": 45,
-      "type": "melee",
-      "description": "正面减伤 60%，需要绕后攻击。",
-      "block_chance": 0.6,
-      "drops": {"gold": [10, 25], "item_chance": 0.3}
-    },
-    {
-      "id": "bat",
-      "name": "蝙蝠",
-      "health": 18,
-      "attack": 6,
-      "speed": 135,
-      "type": "flying",
-      "description": "空中巡逻，俯冲攻击。",
-      "drops": {"gold": [3, 8], "item_chance": 0.1}
-    },
-    {
-      "id": "corrupt_knight",
-      "name": "腐败地牢骑士",
-      "health": 450,
-      "attack": 18,
-      "defense": 3,
-      "speed": 80,
-      "type": "boss",
-      "description": "地牢的守护者，拥有强大的战斗能力。",
-      "phases": [
-        {
-          "name": "第一阶段",
-          "skills": ["horizontal_slash", "jump_slash", "shadow_charge", "retreat"]
-        },
-        {
-          "name": "第二阶段",
-          "threshold": 0.5,
-          "skills": ["triple_slash", "summon", "shadow_flame"],
-          "buffs": {"attack_speed": 1.2, "move_speed": 1.15}
-        }
-      ],
-      "drops": {"gold": [100, 200], "item_chance": 1.0, "legendary_chance": 0.5}
-    }
+	{
+	  "id": "skeleton",
+	  "name": "骷髅兵",
+	  "health": 35,
+	  "attack": 8,
+	  "speed": 70,
+	  "type": "melee",
+	  "description": "基础教学敌人，攻击慢，适合练习翻滚。",
+	  "drops": {"gold": [5, 15], "item_chance": 0.2}
+	},
+	{
+	  "id": "spider",
+	  "name": "毒蜘蛛",
+	  "health": 22,
+	  "attack": 5,
+	  "speed": 115,
+	  "type": "melee",
+	  "description": "快速接近，攻击附加中毒。",
+	  "status_effects": [{"type": "poison", "damage": 1, "duration": 5}],
+	  "drops": {"gold": [3, 10], "item_chance": 0.15}
+	},
+	{
+	  "id": "fire_mage",
+	  "name": "火焰法师",
+	  "health": 28,
+	  "attack": 10,
+	  "speed": 50,
+	  "type": "ranged",
+	  "description": "远程火球攻击，保持距离。",
+	  "drops": {"gold": [8, 18], "item_chance": 0.25}
+	},
+	{
+	  "id": "shield_guard",
+	  "name": "盾牌守卫",
+	  "health": 60,
+	  "attack": 12,
+	  "speed": 45,
+	  "type": "melee",
+	  "description": "正面减伤 60%，需要绕后攻击。",
+	  "block_chance": 0.6,
+	  "drops": {"gold": [10, 25], "item_chance": 0.3}
+	},
+	{
+	  "id": "bat",
+	  "name": "蝙蝠",
+	  "health": 18,
+	  "attack": 6,
+	  "speed": 135,
+	  "type": "flying",
+	  "description": "空中巡逻，俯冲攻击。",
+	  "drops": {"gold": [3, 8], "item_chance": 0.1}
+	},
+	{
+	  "id": "corrupt_knight",
+	  "name": "腐败地牢骑士",
+	  "health": 450,
+	  "attack": 18,
+	  "defense": 3,
+	  "speed": 80,
+	  "type": "boss",
+	  "description": "地牢的守护者，拥有强大的战斗能力。",
+	  "phases": [
+		{
+		  "name": "第一阶段",
+		  "skills": ["horizontal_slash", "jump_slash", "shadow_charge", "retreat"]
+		},
+		{
+		  "name": "第二阶段",
+		  "threshold": 0.5,
+		  "skills": ["triple_slash", "summon", "shadow_flame"],
+		  "buffs": {"attack_speed": 1.2, "move_speed": 1.15}
+		}
+	  ],
+	  "drops": {"gold": [100, 200], "item_chance": 1.0, "legendary_chance": 0.5}
+	}
   ]
 }

@@ -200,13 +200,18 @@ func _spawn_drops(drops: Array):
 		if drop_type == "gold":
 			tex_path = item_textures.get("gold", "")
 		elif item_id != "":
-			tex_path = item_textures.get(item_id, "")
+			tex_path = drop_data.get("texture", "")
+			if tex_path == "" and drop_data.get("data", {}) is Dictionary:
+				tex_path = drop_data["data"].get("texture", "")
+			if tex_path == "":
+				tex_path = item_textures.get(item_id, "")
 		var drop_script = load("res://scripts/items/ItemDrop.gd")
 		var drop_node = Area2D.new()
 		drop_node.set_script(drop_script)
 		get_parent().add_child(drop_node)
 		var full_data = drop_data.duplicate()
-		full_data["texture"] = tex_path
+		if tex_path != "":
+			full_data["texture"] = tex_path
 		if drop_type == "gold":
 			full_data["type"] = "gold"
 		elif drop_data.get("data", {}).has("type"):

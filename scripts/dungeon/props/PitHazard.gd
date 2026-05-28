@@ -8,8 +8,10 @@ func _ready():
 
 func _on_body_entered(body: Node2D):
 	if body.is_in_group("player"):
-		# Deal damage
-		EventBus.player_hit.emit(damage, self)
-		# Teleport to safe position
+		if body.has_method("take_damage"):
+			body.take_damage(damage, self)
+		else:
+			EventBus.player_hit.emit(damage, self)
 		body.global_position = safe_position
-		body.velocity = Vector2.ZERO
+		if body is CharacterBody2D:
+			body.velocity = Vector2.ZERO

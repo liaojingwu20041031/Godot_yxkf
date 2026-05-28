@@ -8,6 +8,11 @@ enum TileSource {
 	WALL_BROWN,    # 2 - brick_brown0, full collision
 	WALL_DARK,     # 3 - brick_dark0, full collision
 	PLATFORM,      # 4 - brick_brown2, one-way top collision
+	FLOOR_LIMESTONE, # 5 - limestone_0
+	FLOOR_CRYPT,   # 6 - crypt_10
+	FLOOR_ACIDIC,  # 7 - acidic_floor_0
+	WALL_STONE,    # 8 - stone_gray_0
+	WALL_DEEP,     # 9 - brick_dark_4
 }
 
 const TILE_SIZE: int = 32
@@ -43,6 +48,13 @@ static func create_tileset() -> TileSet:
 
 	# Source 4: brick_brown2 (platform with one-way top collision)
 	_add_platform_source(tileset, 4, "res://assets/dungeon_crawl/wall/brick_brown2.png")
+
+	# Extra visual themes imported from the full asset pack.
+	_add_atlas_source(tileset, 5, "res://assets/dungeon_crawl/floor/limestone_0.png", true)
+	_add_atlas_source(tileset, 6, "res://assets/dungeon_crawl/floor/crypt_10.png", true)
+	_add_atlas_source(tileset, 7, "res://assets/dungeon_crawl/floor/acidic_floor_0.png", true)
+	_add_atlas_source(tileset, 8, "res://assets/dungeon_crawl/wall/stone_gray_0.png", true)
+	_add_atlas_source(tileset, 9, "res://assets/dungeon_crawl/wall/brick_dark_4.png", true)
 
 	return tileset
 

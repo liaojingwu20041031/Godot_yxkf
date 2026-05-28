@@ -5,6 +5,7 @@ extends Node2D
 
 var _cooldown_timer: float = 0.0
 var _player_in_zone: bool = false
+var _player: Node = null
 
 @onready var damage_zone: Area2D = $DamageZone
 
@@ -15,18 +16,26 @@ func _ready():
 func _on_body_entered(body: Node2D):
 	if body.is_in_group("player"):
 		_player_in_zone = true
+		_player = body
 		_deal_damage(body)
 
 func _on_body_exited(body: Node2D):
 	if body.is_in_group("player"):
 		_player_in_zone = false
+		if _player == body:
+			_player = null
 
 func _process(delta):
 	if _cooldown_timer > 0:
 		_cooldown_timer -= delta
+	if _player_in_zone and _player and is_instance_valid(_player):
+		_deal_damage(_player)
 
-func _deal_damage(_player: Node):
+func _deal_damage(player: Node):
 	if _cooldown_timer > 0:
 		return
 	_cooldown_timer = damage_cooldown
-	EventBus.player_hit.emit(damage, self)
+	if player.has_method("take_damage"):
+		player.take_damage(damage, self)
+	else:
+		EventBus.player_hit.emit(damage, self)

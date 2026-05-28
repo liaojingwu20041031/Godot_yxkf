@@ -1,0 +1,93 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/dungeon/RoomManager.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/dungeon/Door.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/ShieldGuard.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/Skeleton.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/props/Torch.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/props/Spike.tscn" id="6"]
+
+[sub_resource type="RectangleShape2D" id="door_shape"]
+size = Vector2(16, 48)
+
+[node name="CombatRoom_Guard" type="Node2D"]
+script = ExtResource("1")
+room_type = 2
+room_layout = "wide"
+floor_variant = 1
+encounter_theme = "guards"
+
+[node name="EntranceDoor" type="StaticBody2D" parent="."]
+position = Vector2(40, 296)
+collision_layer = 4
+script = ExtResource("2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EntranceDoor"]
+shape = SubResource("door_shape")
+
+[node name="Sprite2D" type="Sprite2D" parent="EntranceDoor"]
+
+[node name="ExitDoor" type="StaticBody2D" parent="."]
+position = Vector2(600, 296)
+collision_layer = 4
+script = ExtResource("2")
+target_room_type = "TREASURE"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDoor"]
+shape = SubResource("door_shape")
+
+[node name="Sprite2D" type="Sprite2D" parent="ExitDoor"]
+
+[node name="ExitDoorB" type="StaticBody2D" parent="."]
+position = Vector2(600, 160)
+collision_layer = 4
+script = ExtResource("2")
+target_room_type = "REST"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDoorB"]
+shape = SubResource("door_shape")
+
+[node name="Sprite2D" type="Sprite2D" parent="ExitDoorB"]
+
+[node name="EnemyContainer" type="Node2D" parent="."]
+
+[node name="PropContainer" type="Node2D" parent="."]
+
+[node name="RewardPoint" type="Marker2D" parent="."]
+position = Vector2(320, 180)
+
+[node name="PlayerSpawnPoint" type="Marker2D" parent="."]
+position = Vector2(100, 306)
+
+[node name="Torch1" parent="PropContainer" instance=ExtResource("5")]
+position = Vector2(48, 288)
+
+[node name="Torch2" parent="PropContainer" instance=ExtResource("5")]
+position = Vector2(592, 288)
+
+[node name="SpikeLeft" parent="PropContainer" instance=ExtResource("6")]
+position = Vector2(260, 316)
+
+[node name="SpikeRight" parent="PropContainer" instance=ExtResource("6")]
+position = Vector2(380, 316)
+
+[node name="GuardCenter" parent="EnemyContainer" instance=ExtResource("3")]
+position = Vector2(340, 308)
+
+[node name="GuardRight" parent="EnemyContainer" instance=ExtResource("3")]
+position = Vector2(500, 308)
+
+[node name="SkeletonLeft" parent="EnemyContainer" instance=ExtResource("4")]
+position = Vector2(180, 308)
+
+[node name="ExitLabelA" type="Label" parent="."]
+position = Vector2(560, 280)
+theme_override_colors/font_color = Color(1, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 8
+text = "宝藏"
+
+[node name="ExitLabelB" type="Label" parent="."]
+position = Vector2(560, 144)
+theme_override_colors/font_color = Color(0.3, 1, 0.5, 1)
+theme_override_font_sizes/font_size = 8
+text = "篝火"

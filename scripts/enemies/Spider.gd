@@ -12,7 +12,7 @@ func _ready():
 	detection_range = 120.0
 	attack_range = 20.0
 	attack_cooldown = 0.8
-	monster_texture = load("res://assets/dungeon_crawl/monsters/jumping_spider.png")
+	monster_texture = load("res://assets/dungeon_crawl/monsters/jumping_spider_new.png")
 	super._ready()
 
 func _chase_state(delta):

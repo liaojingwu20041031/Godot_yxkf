@@ -12,7 +12,7 @@ func _ready():
 	detection_range = 100.0
 	attack_range = 18.0
 	attack_cooldown = 1.2
-	monster_texture = load("res://assets/dungeon_crawl/monsters/orc_warrior.png")
+	monster_texture = load("res://assets/dungeon_crawl/monsters/ooze_new.png")
 	super._ready()
 
 func _chase_state(delta):

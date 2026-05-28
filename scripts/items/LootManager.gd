@@ -19,7 +19,11 @@ func _init_loot_table():
 		"blood_potion": {"type": "consumable", "chance": 0.10, "heal": 100, "name": "鲜血药水",
 			"texture": "res://assets/dungeon_crawl/items/potions/i-blood.png"},
 		"shield_potion": {"type": "consumable", "chance": 0.10, "shield": 40, "name": "护盾药水",
-			"texture": "res://assets/dungeon_crawl/items/potions/brilliant_blue.png"},
+			"texture": "res://assets/dungeon_crawl/items/potions/sky_blue.png"},
+		"golden_potion": {"type": "consumable", "chance": 0.08, "heal": 20, "shield": 20, "name": "金色药水",
+			"texture": "res://assets/dungeon_crawl/items/potions/golden.png"},
+		"ruby_potion": {"type": "consumable", "chance": 0.06, "heal": 75, "name": "红宝石药水",
+			"texture": "res://assets/dungeon_crawl/items/potions/ruby_new.png"},
 		"crystal_green": {"type": "consumable", "chance": 0.08, "heal": 30, "name": "绿色水晶",
 			"texture": "res://assets/dungeon_crawl/items/misc/crystal_green.png"},
 		"crystal_red": {"type": "consumable", "chance": 0.06, "heal": 50, "name": "红色水晶",
@@ -43,23 +47,25 @@ func _init_loot_table():
 		"flame_sword": {"type": "equipment", "chance": 0.04, "slot": "weapon", "attack": 5, "element": "fire", "name": "烈焰剑",
 			"texture": "res://assets/dungeon_crawl/items/weapons/blessed_blade.png"},
 		"ice_dagger": {"type": "equipment", "chance": 0.05, "slot": "weapon", "attack": 3, "element": "ice", "name": "冰霜匕首",
-			"texture": "res://assets/dungeon_crawl/items/weapons/short_sword1.png"},
+			"texture": "res://assets/dungeon_crawl/items/weapons/dagger_new.png"},
 		"shadow_blade": {"type": "equipment", "chance": 0.03, "slot": "weapon", "attack": 9, "name": "暗影之刃",
 			"texture": "res://assets/dungeon_crawl/items/weapons/blessed_blade.png"},
 		"bone_club": {"type": "equipment", "chance": 0.12, "slot": "weapon", "attack": 3, "name": "骨棒",
-			"texture": "res://assets/dungeon_crawl/items/misc/bone_gray.png"},
-		"crystal_staff": {"type": "equipment", "chance": 0.04, "slot": "weapon", "attack": 6, "name": "水晶法杖",
-			"texture": "res://assets/dungeon_crawl/items/misc/crystal_white.png"},
+			"texture": "res://assets/dungeon_crawl/items/weapons/club_new.png"},
+		"raider_axe": {"type": "equipment", "chance": 0.07, "slot": "weapon", "attack": 5, "name": "掠夺者斧",
+			"texture": "res://assets/dungeon_crawl/items/weapons/axe.png"},
+		"crystal_staff": {"type": "equipment", "chance": 0.04, "slot": "weapon", "attack": 6, "attack_speed": 0.06, "name": "水晶法杖",
+			"texture": "res://assets/dungeon_crawl/items/weapons/flail_1_new.png"},
 
 		# === ARMOR (6 items) ===
 		"leather_armor": {"type": "equipment", "chance": 0.12, "slot": "armor", "defense": 2, "name": "皮甲",
-			"texture": "res://assets/dungeon_crawl/items/misc/cylinder_gray.png"},
+			"texture": "res://assets/dungeon_crawl/items/armor/leather_armor_1.png"},
 		"chain_armor": {"type": "equipment", "chance": 0.08, "slot": "armor", "defense": 4, "name": "锁甲",
-			"texture": "res://assets/dungeon_crawl/items/misc/cylinder_gray.png"},
+			"texture": "res://assets/dungeon_crawl/items/armor/ring_mail_1_new.png"},
 		"plate_armor": {"type": "equipment", "chance": 0.04, "slot": "armor", "defense": 7, "name": "板甲",
-			"texture": "res://assets/dungeon_crawl/items/misc/cylinder_gray.png"},
+			"texture": "res://assets/dungeon_crawl/items/armor/buckler_1_new.png"},
 		"shadow_cloak": {"type": "equipment", "chance": 0.05, "slot": "armor", "defense": 3, "speed": 20, "name": "暗影斗篷",
-			"texture": "res://assets/dungeon_crawl/items/misc/stone3_magenta.png"},
+			"texture": "res://assets/dungeon_crawl/items/armor/robe_1_new.png"},
 		"fire_robe": {"type": "equipment", "chance": 0.04, "slot": "armor", "defense": 2, "element": "fire", "name": "火焰长袍",
 			"texture": "res://assets/dungeon_crawl/items/misc/stone2_red.png"},
 		"bone_armor": {"type": "equipment", "chance": 0.06, "slot": "armor", "defense": 5, "name": "骨甲",
@@ -96,7 +102,38 @@ func _init_loot_table():
 			"texture": "res://assets/dungeon_crawl/items/misc/penta_orange.png"},
 		"face_gold": {"type": "equipment", "chance": 0.02, "slot": "ring", "gold_bonus": 0.5, "name": "黄金面具",
 			"texture": "res://assets/dungeon_crawl/items/misc/face1_gold.png"},
+		"warding_rune": {"type": "equipment", "chance": 0.04, "slot": "rune", "shield": 20, "defense": 1, "name": "守护符文",
+			"texture": "res://assets/dungeon_crawl/items/misc/i-warding.png"},
+		"rage_rune": {"type": "equipment", "chance": 0.035, "slot": "rune", "attack": 3, "attack_speed": 0.08, "name": "狂怒符文",
+			"texture": "res://assets/dungeon_crawl/items/misc/i-rage.png"},
+		"spirit_rune": {"type": "equipment", "chance": 0.035, "slot": "rune", "max_health": 8, "lifesteal": 0.04, "name": "灵魂符文",
+			"texture": "res://assets/dungeon_crawl/items/misc/i-spirit.png"},
 	}
+
+	for item_id in loot_table:
+		var item = loot_table[item_id]
+		if item.get("type", "") == "equipment":
+			item["stats"] = _extract_item_stats(item)
+
+func _extract_item_stats(item: Dictionary) -> Dictionary:
+	var stats = {}
+	for stat in ["attack", "attack_power", "defense", "max_health", "shield", "gold_bonus", "lifesteal", "attack_speed", "speed"]:
+		if item.has(stat):
+			stats[stat] = item[stat]
+	return stats
+
+func _build_drop_data(item_id: String, item: Dictionary) -> Dictionary:
+	var item_copy = item.duplicate(true)
+	item_copy["type"] = item.get("type", "")
+	item_copy["name"] = item.get("name", item_id)
+	item_copy["texture"] = item.get("texture", "")
+	if item_copy.get("type", "") == "equipment" and not item_copy.has("stats"):
+		item_copy["stats"] = _extract_item_stats(item_copy)
+
+	var drop_data = {"id": item_id, "data": item_copy}
+	for key in item_copy:
+		drop_data[key] = item_copy[key]
+	return drop_data
 
 func roll_loot(enemy_type: String = "normal") -> Array:
 	var drops = []
@@ -130,11 +167,7 @@ func roll_loot(enemy_type: String = "normal") -> Array:
 		elif enemy_type == "boss":
 			chance *= 2.0
 		if randf() < chance:
-			var drop_data = {"id": item_id, "data": item.duplicate()}
-			drop_data["data"]["type"] = item["type"]
-			drop_data["data"]["name"] = item.get("name", item_id)
-			drop_data["data"]["texture"] = item.get("texture", "")
-			drops.append(drop_data)
+			drops.append(_build_drop_data(item_id, item))
 			dropped_count += 1
 
 	return drops
@@ -159,11 +192,7 @@ func roll_chest_loot(chest_type: String = "normal") -> Array:
 		if chest_type == "rare":
 			chance *= 2.0
 		if randf() < chance:
-			var drop_data = {"id": item_id, "data": item.duplicate()}
-			drop_data["data"]["type"] = item["type"]
-			drop_data["data"]["name"] = item.get("name", item_id)
-			drop_data["data"]["texture"] = item.get("texture", "")
-			drops.append(drop_data)
+			drops.append(_build_drop_data(item_id, item))
 			break
 
 	return drops
