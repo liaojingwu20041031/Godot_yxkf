@@ -1,6 +1,8 @@
 extends StaticBody2D
 
 @export var is_open: bool = false
+@export var target_room_type: String = ""
+@export var door_label_text: String = ""
 
 @onready var collision: CollisionShape2D = $CollisionShape2D
 var sprite_node: Node

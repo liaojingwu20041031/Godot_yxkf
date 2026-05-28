@@ -23,3 +23,4 @@ signal hide_reward_panel
 signal show_tooltip(item_data: Dictionary)
 signal hide_tooltip
 signal show_room_message(text: String)
+signal room_exit_selected(target_room_type: String)

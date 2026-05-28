@@ -22,11 +22,16 @@ var tracked_enemies: Array[Node] = []
 @onready var enemy_container: Node2D = get_node_or_null("EnemyContainer")
 @onready var reward_point: Marker2D = get_node_or_null("RewardPoint")
 
+var all_exit_doors: Array[StaticBody2D] = []
+
 func _ready():
 	_setup_tilemap()
 
-	# Create exit detection area directly on the room (not on the door)
-	_create_exit_detection()
+	# Find all exit doors
+	_collect_exit_doors()
+
+	# Create exit detection areas for all exit doors
+	_create_exit_detections()
 
 	EventBus.enemy_died.connect(_on_enemy_died)
 
@@ -35,54 +40,66 @@ func _ready():
 		RoomType.START:
 			if entrance_door and entrance_door.has_method("open"):
 				entrance_door.open()
-			if exit_door and exit_door.has_method("open"):
-				exit_door.open()
+			for door in all_exit_doors:
+				if door and door.has_method("open"):
+					door.open()
 			is_cleared = true
 		RoomType.COMBAT, RoomType.ELITE, RoomType.BOSS:
 			if entrance_door and entrance_door.has_method("open"):
 				entrance_door.open()
-			if exit_door and exit_door.has_method("close"):
-				exit_door.close()
+			for door in all_exit_doors:
+				if door and door.has_method("close"):
+					door.close()
 			call_deferred("activate")
 		RoomType.TREASURE:
 			if entrance_door and entrance_door.has_method("open"):
 				entrance_door.open()
-			if exit_door and exit_door.has_method("close"):
-				exit_door.close()
+			for door in all_exit_doors:
+				if door and door.has_method("close"):
+					door.close()
 			call_deferred("activate")
 		RoomType.SHOP, RoomType.REST:
 			if entrance_door and entrance_door.has_method("open"):
 				entrance_door.open()
-			if exit_door and exit_door.has_method("open"):
-				exit_door.open()
+			for door in all_exit_doors:
+				if door and door.has_method("open"):
+					door.open()
 			call_deferred("activate")
 		_:
 			if entrance_door and entrance_door.has_method("open"):
 				entrance_door.open()
-			if exit_door and exit_door.has_method("open"):
-				exit_door.open()
+			for door in all_exit_doors:
+				if door and door.has_method("open"):
+					door.open()
 			is_cleared = true
 
-func _create_exit_detection():
-	# Create a dedicated exit detection area at the exit door position
-	var exit_pos = Vector2(600, 296)
-	if exit_door:
-		exit_pos = exit_door.global_position
+func _collect_exit_doors():
+	all_exit_doors.clear()
+	for child in get_children():
+		if child is StaticBody2D and child.name.begins_with("ExitDoor"):
+			all_exit_doors.append(child)
+	if all_exit_doors.is_empty() and exit_door:
+		all_exit_doors.append(exit_door)
 
+func _create_exit_detections():
+	for door in all_exit_doors:
+		_create_exit_detection_for_door(door)
+
+func _create_exit_detection_for_door(door: StaticBody2D):
 	var exit_area = Area2D.new()
-	exit_area.name = "ExitArea"
+	exit_area.name = "ExitArea_" + door.name
 	exit_area.collision_layer = 0
-	exit_area.collision_mask = 1  # Detect player (layer 1)
-	exit_area.position = exit_pos
+	exit_area.collision_mask = 1
+	exit_area.position = door.position
 
 	var shape = CollisionShape2D.new()
 	var rect = RectangleShape2D.new()
-	rect.size = Vector2(32, 64)  # Larger detection area
+	rect.size = Vector2(32, 64)
 	shape.shape = rect
 	exit_area.add_child(shape)
 
 	add_child(exit_area)
-	exit_area.body_entered.connect(_on_exit_body_entered)
+	exit_area.body_entered.connect(_on_exit_body_entered.bind(door))
 
 func _setup_tilemap():
 	if has_node("DungeonTileMap"):
@@ -115,10 +132,26 @@ func _close_entrance():
 		entrance_door.close()
 
 func _unlock_exit():
-	if exit_door and exit_door.has_method("open"):
-		exit_door.open()
+	# Open all exit doors
+	for door in all_exit_doors:
+		if door and door.has_method("open"):
+			door.open()
 	is_cleared = true
-	EventBus.show_room_message.emit("出口已开启 - 走到门口进入下一房间")
+	# Show available exits
+	var exits = _get_available_exits()
+	if exits.size() > 1:
+		EventBus.show_room_message.emit("选择出口: %s" % " / ".join(exits))
+	else:
+		EventBus.show_room_message.emit("出口已开启 - 走到门口进入下一房间")
+
+func _get_available_exits() -> Array[String]:
+	var exits: Array[String] = []
+	for door in all_exit_doors:
+		if door:
+			var target = door.get("target_room_type")
+			if target and target != "":
+				exits.append(target)
+	return exits
 
 func _complete_room():
 	EventBus.room_cleared.emit()
@@ -195,7 +228,10 @@ func _generate_rewards() -> Array:
 		rewards = upgrade_manager.get_random_upgrades(3)
 	return rewards
 
-func _on_exit_body_entered(body: Node2D):
-	print("[Room] Exit body_entered: %s is_player=%s is_cleared=%s" % [body.name, body.is_in_group("player"), is_cleared])
+func _on_exit_body_entered(body: Node2D, door: StaticBody2D):
 	if body.is_in_group("player") and is_cleared:
-		_complete_room()
+		var target = door.get("target_room_type") if door else ""
+		if target and target != "":
+			EventBus.room_exit_selected.emit(target)
+		else:
+			_complete_room()
