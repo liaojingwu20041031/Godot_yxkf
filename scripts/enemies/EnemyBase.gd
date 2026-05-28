@@ -144,13 +144,9 @@ func _on_detection_exited(body: Node2D):
 func _on_hurt(damage: int, knockback: Vector2, source: Node):
 	current_health -= damage
 	EventBus.enemy_hit.emit(self, damage)
-	# Show damage number
-	var ft = FloatingText.new()
-	ft.text = str(damage)
-	ft.color = Color(1, 0.3, 0.3, 1)
-	ft.font_size = 14
-	ft.global_position = global_position + Vector2(0, -30)
-	get_parent().add_child(ft)
+	# Feedback
+	FeedbackManager.damage_text(global_position + Vector2(0, -20), damage)
+	FeedbackManager.hit_stop(0.03)
 	if hit_flash_node and hit_flash_node.has_method("flash"):
 		hit_flash_node.flash()
 	if current_health <= 0:

@@ -26,6 +26,7 @@ EventBus="*res://scripts/core/EventBus.gd"
 GameManager="*res://scripts/core/GameManager.gd"
 UpgradeManager="*res://scripts/upgrades/UpgradeManager.gd"
 AssetCatalog="*res://scripts/core/AssetCatalog.gd"
+FeedbackManager="*res://scripts/core/FeedbackManager.gd"
 
 [display]
 

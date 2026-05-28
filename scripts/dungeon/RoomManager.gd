@@ -24,19 +24,16 @@ var tracked_enemies: Array[Node] = []
 
 var all_exit_doors: Array[StaticBody2D] = []
 var _exit_triggered: bool = false
+var _nearby_door: StaticBody2D = null
+var _exit_label: Label
 
 func _ready():
 	_setup_tilemap()
-
-	# Find all exit doors
 	_collect_exit_doors()
-
-	# Create exit detection areas for all exit doors
 	_create_exit_detections()
-
+	_create_exit_label()
 	EventBus.enemy_died.connect(_on_enemy_died)
 
-	# Setup doors based on room type
 	match room_type:
 		RoomType.START:
 			if entrance_door and entrance_door.has_method("open"):
@@ -59,12 +56,13 @@ func _ready():
 				if door and door.has_method("close"):
 					door.close()
 			call_deferred("activate")
-		RoomType.SHOP, RoomType.REST:
+		RoomType.SHOP, RoomType.REST, RoomType.SHRINE:
 			if entrance_door and entrance_door.has_method("open"):
 				entrance_door.open()
 			for door in all_exit_doors:
 				if door and door.has_method("open"):
 					door.open()
+			is_cleared = true
 			call_deferred("activate")
 		_:
 			if entrance_door and entrance_door.has_method("open"):
@@ -83,40 +81,82 @@ func _collect_exit_doors():
 		all_exit_doors.append(exit_door)
 
 func _create_exit_detections():
-	# Connect to existing ExitDetection areas in the scene
 	for door in all_exit_doors:
-		var existing_area = door.get_node_or_null("ExitDetection")
-		if existing_area:
-			if not existing_area.body_entered.is_connected(_on_exit_body_entered.bind(door)):
-				existing_area.body_entered.connect(_on_exit_body_entered.bind(door))
-			print("[Exit] Connected ExitDetection for %s" % door.name)
+		var area = door.get_node_or_null("ExitDetection")
+		if not area:
+			# Create detection area as child of door
+			area = Area2D.new()
+			area.name = "ExitDetection"
+			area.collision_layer = 0
+			area.collision_mask = 1
+			var shape = CollisionShape2D.new()
+			var rect = RectangleShape2D.new()
+			rect.size = Vector2(48, 64)
+			shape.shape = rect
+			area.add_child(shape)
+			door.add_child(area)
+		area.body_entered.connect(_on_door_entered.bind(door))
+		area.body_exited.connect(_on_door_exited.bind(door))
 
-# Distance-based exit detection as fallback
-var _exit_check_timer: float = 0.0
+func _create_exit_label():
+	_exit_label = Label.new()
+	_exit_label.name = "ExitPrompt"
+	_exit_label.visible = false
+	_exit_label.z_index = 100
+	_exit_label.add_theme_font_size_override("font_size", 10)
+	_exit_label.add_theme_color_override("font_color", Color(1, 0.9, 0.3))
+	_exit_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_exit_label.offset_left = -60
+	_exit_label.offset_right = 60
+	_exit_label.offset_top = -16
+	_exit_label.offset_bottom = 0
+	add_child(_exit_label)
 
-func _process(delta):
-	_exit_check_timer += delta
-	if _exit_check_timer < 0.2:
+func _process(_delta):
+	if not is_cleared or _exit_triggered:
+		_exit_label.visible = false
 		return
-	_exit_check_timer = 0.0
 
+	if _nearby_door:
+		_exit_label.visible = true
+		var target = _nearby_door.get("target_room_type")
+		if target and target != "":
+			_exit_label.text = "E 进入 %s" % target
+		else:
+			_exit_label.text = "E 进入下一房间"
+		_exit_label.global_position = _nearby_door.global_position + Vector2(0, -40)
+	else:
+		_exit_label.visible = false
+
+func _unhandled_input(event):
+	if _exit_triggered:
+		return
 	if not is_cleared:
 		return
-
-	var player = get_tree().get_first_node_in_group("player")
-	if not player:
+	if not _nearby_door:
 		return
+	if event.is_action_pressed("interact"):
+		get_viewport().set_input_as_handled()
+		_trigger_exit(_nearby_door)
 
-	for door in all_exit_doors:
-		if not door:
-			continue
-		var door_pos = door.global_position
-		var player_pos = player.global_position
-		var dist = door_pos.distance_to(player_pos)
-		if dist < 50.0:
-			print("[Exit] Player near door %s (dist=%.1f, is_cleared=%s)" % [door.name, dist, is_cleared])
-			_on_exit_body_entered(player, door)
-			return
+func _on_door_entered(body: Node2D, door: StaticBody2D):
+	if body.is_in_group("player") and is_cleared:
+		_nearby_door = door
+
+func _on_door_exited(body: Node2D, door: StaticBody2D):
+	if body.is_in_group("player") and door == _nearby_door:
+		_nearby_door = null
+
+func _trigger_exit(door: StaticBody2D):
+	if _exit_triggered:
+		return
+	_exit_triggered = true
+	var target = door.get("target_room_type") if door else ""
+	print("[Exit] Player chose door -> '%s'" % target)
+	if target and target != "":
+		EventBus.room_exit_selected.emit(target)
+	else:
+		EventBus.room_cleared.emit()
 
 func _setup_tilemap():
 	if has_node("DungeonTileMap"):
@@ -143,29 +183,27 @@ func activate():
 		_spawn_shop()
 	elif room_type == RoomType.REST:
 		_spawn_rest()
+	elif room_type == RoomType.SHRINE:
+		pass
 
 func _close_entrance():
 	if entrance_door and entrance_door.has_method("close"):
 		entrance_door.close()
 
 func _unlock_exit():
-	# Open all exit doors
 	for door in all_exit_doors:
 		if door and door.has_method("open"):
 			door.open()
 	is_cleared = true
-	print("[Room] Exit unlocked! is_cleared=%s, exit_doors=%d" % [is_cleared, all_exit_doors.size()])
-	# Show available exits from door config or route table
 	var exits = _get_available_exits()
 	if exits.is_empty():
-		# Fallback: get routes from GameRoot
 		var game_root = get_parent()
 		if game_root and game_root.has_method("get_available_routes"):
 			exits = game_root.get_available_routes()
 	if exits.size() > 1:
 		EventBus.show_room_message.emit("选择出口: %s" % " / ".join(exits))
 	else:
-		EventBus.show_room_message.emit("出口已开启 - 走到门口进入下一房间")
+		EventBus.show_room_message.emit("出口已开启 - 走到门口按 E 进入")
 
 func _get_available_exits() -> Array[String]:
 	var exits: Array[String] = []
@@ -175,9 +213,6 @@ func _get_available_exits() -> Array[String]:
 			if target and target != "":
 				exits.append(target)
 	return exits
-
-func _complete_room():
-	EventBus.room_cleared.emit()
 
 func _spawn_enemies():
 	enemies_alive = 0
@@ -198,8 +233,6 @@ func _spawn_enemies():
 		tracked_enemies.append(enemy)
 	enemies_total = enemies_alive
 	EventBus.show_room_message.emit("击败所有敌人 0/%d" % enemies_total)
-	for enemy in tracked_enemies:
-		print("[Room] Enemy: %s pos=%s" % [enemy.name, enemy.global_position])
 	if enemies_total <= 0 and (room_type == RoomType.COMBAT or room_type == RoomType.ELITE):
 		push_warning("Combat room has no enemies, unlocking exit")
 		_unlock_exit()
@@ -215,9 +248,7 @@ func _spawn_shop():
 	pass
 
 func _spawn_rest():
-	var player = get_tree().get_first_node_in_group("player")
-	if player and player.has_method("heal"):
-		player.heal(50)
+	pass
 
 func _on_treasure_opened():
 	_unlock_exit()
@@ -250,17 +281,3 @@ func _generate_rewards() -> Array:
 	if upgrade_manager:
 		rewards = upgrade_manager.get_random_upgrades(3)
 	return rewards
-
-func _on_exit_body_entered(body: Node2D, door: StaticBody2D):
-	if _exit_triggered:
-		print("[Exit] Already triggered, skipping")
-		return
-	print("[Exit] body=%s is_player=%s is_cleared=%s" % [body.name, body.is_in_group("player"), is_cleared])
-	if body.is_in_group("player") and is_cleared:
-		_exit_triggered = true
-		var target = door.get("target_room_type") if door else ""
-		print("[Exit] Triggered! target='%s'" % target)
-		if target and target != "":
-			EventBus.room_exit_selected.emit(target)
-		else:
-			_complete_room()

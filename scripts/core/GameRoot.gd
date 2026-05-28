@@ -50,9 +50,11 @@ func _ready():
 	EventBus.room_cleared.connect(_on_room_cleared)
 	EventBus.room_exit_selected.connect(_on_room_exit_selected)
 	EventBus.game_over.connect(_on_game_over)
+	EventBus.player_hit.connect(_on_player_hit)
 	camera = $Camera2D
 	player = $Player
-	_load_room_at_depth(0)
+	FeedbackManager.setup(camera)
+	_load_start_room()
 
 func _pick_room_scene(room_type: String) -> String:
 	var pool = room_pools.get(room_type, [])
@@ -71,20 +73,17 @@ func _pick_room_scene(room_type: String) -> String:
 
 func get_available_routes() -> Array[String]:
 	var routes: Array[String] = []
-	if route_table.has(run_depth + 1):
-		for r in route_table[run_depth + 1]:
+	var next = run_depth + 1
+	if route_table.has(next):
+		for r in route_table[next]:
 			routes.append(r)
 	if routes.is_empty():
-		# Default fallback
 		routes.append("COMBAT")
 	return routes
 
+# Load room by type - does NOT increment depth
 func _load_room_by_type(room_type: String):
-	run_depth += 1
 	print("[GameRoot] Loading room: %s (depth=%d)" % [room_type, run_depth])
-	if run_depth >= max_depth:
-		EventBus.game_over.emit(true)
-		return
 
 	# Remove old room
 	if current_room:
@@ -125,33 +124,30 @@ func _load_room_by_type(room_type: String):
 	EventBus.room_entered.emit(room_type)
 	print("[GameRoot] Room loaded: %s" % room_type)
 
-func _load_room_at_depth(depth: int):
-	run_depth = depth
-	if route_table.has(depth):
-		var options = route_table[depth]
-		if options.size() == 1:
-			_load_room_by_type(options[0])
-		else:
-			_load_room_by_type(options[0])
-	else:
-		EventBus.game_over.emit(true)
+func _load_start_room():
+	run_depth = 0
+	_load_room_by_type("START")
 
 func _process(_delta):
 	if player and is_instance_valid(player) and camera:
 		camera.global_position = player.global_position
 
+# room_cleared no longer auto-advances - door selection handles progression
 func _on_room_cleared():
-	print("[GameRoot] room_cleared signal received")
-	await get_tree().create_timer(1.5).timeout
-	var routes = get_available_routes()
-	print("[GameRoot] Available routes: %s" % str(routes))
-	if routes.size() >= 1:
-		_load_room_by_type(routes[0])
+	print("[GameRoot] room_cleared. Waiting for door selection.")
 
+# Only progression path: player chooses a door
 func _on_room_exit_selected(target_room_type: String):
-	print("[GameRoot] room_exit_selected signal received: '%s'" % target_room_type)
-	await get_tree().create_timer(1.0).timeout
+	run_depth += 1
+	print("[GameRoot] Advancing to depth %d -> %s" % [run_depth, target_room_type])
+	if run_depth >= max_depth:
+		EventBus.game_over.emit(true)
+		return
+	await get_tree().create_timer(0.5).timeout
 	_load_room_by_type(target_room_type)
+
+func _on_player_hit(_damage: int, _source: Node):
+	FeedbackManager.screen_shake(3.0, 0.12)
 
 func _on_game_over(victory: bool):
 	if victory:
